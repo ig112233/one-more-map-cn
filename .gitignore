@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-single/
 
 # personal local tooling (not part of the site)
 *.ahk

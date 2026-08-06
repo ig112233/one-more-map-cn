@@ -9,9 +9,9 @@
 import type { ChartAreaType, Edges, Stat, Weights } from '../types'
 
 export const STRATEGY_RESERVATION_OPTIONS = [
-  { id: 'divine', label: 'Divine strategies' },
-  { id: 'meatfish', label: 'Meatfish' },
-  { id: 'ethereal', label: 'Magic Ethereal' },
+  { id: 'divine', label: '神圣石策略' },
+  { id: 'meatfish', label: 'Meatfish（肉鱼）' },
+  { id: 'ethereal', label: '魔法虚无（Magic Ethereal）' },
 ] as const
 
 export type StrategyReservationId = (typeof STRATEGY_RESERVATION_OPTIONS)[number]['id']
@@ -159,7 +159,7 @@ const NOT_CENTER = [0, 1, 2, 3, 5, 6, 7, 8]
 
 const MEATFISH_RESERVATION: StrategyReservationGroup = {
   id: 'meatfish',
-  label: 'Meatfish',
+  label: 'Meatfish（肉鱼）',
   modIds: [
     'adj-star-1',
     'adj-star-2',
@@ -176,7 +176,7 @@ const MEATFISH_RESERVATION: StrategyReservationGroup = {
 
 const ETHEREAL_RESERVATION: StrategyReservationGroup = {
   id: 'ethereal',
-  label: 'Magic Ethereal',
+  label: '魔法虚无（Magic Ethereal）',
   modIds: [
     'adj-lantern',
     'voy-noequip',
@@ -199,7 +199,7 @@ const DIVINE_RESERVATION_MODS = [
 
 const divineReservation = (includeSpeedrunCentres: boolean): StrategyReservationGroup => ({
   id: 'divine',
-  label: 'Divine strategies',
+  label: '神圣石策略',
   modIds: includeSpeedrunCentres
     ? [...DIVINE_RESERVATION_MODS, ...SPEEDRUN_CENTER_MODS]
     : DIVINE_RESERVATION_MODS,
@@ -223,14 +223,14 @@ const ALC_GO_LAYOUT: Edges[] = [
 export const STRATEGIES: StrategyDef[] = [
   {
     id: 'alc-and-go',
-    name: 'Alc & Go',
-    tagline: 'Burn the charts nothing else wants - one-lane highways, hope for random encounters.',
-    source: { label: 'Milky’s strat', url: '' },
+    name: '点金就跑（Alc & Go）',
+    tagline: '烧掉没人要的海图 - 单车道高速公路，祈祷随机遭遇。',
+    source: { label: 'Milky 的策略', url: '' },
     guide: [
-      'Uses only charts no other strategy needs - keeper charts are held back by default, with independent protections in Solver Settings.',
-      'Forms single-lane highways (three lanes joined along the bottom) - or whatever the shapes allow.',
-      'Don’t care what’s on the tiles: you’re there for scattered loot, sulphur and random encounters.',
-      'Alc, go, place every lantern, click everything, leave. Rinse and repeat between real runs.',
+      '只使用其他策略都不需要的海图 - 默认会保留各策略的存图，也可在“求解设置”中独立开关保护。',
+      '组成单车道高速公路（三条车道沿底部连接）- 或者随形状怎么都能摆。',
+      '不在乎格子上是什么：你只是为了零散战利品、硫磺和随机遭遇。',
+      '点金、出发、放满灯笼、点光一切、走人。在正式跑图之间反复循环。',
     ],
     weights: {
       'self:quant': 2,
@@ -245,18 +245,18 @@ export const STRATEGIES: StrategyDef[] = [
   },
   {
     id: 'anchorfield-fishing',
-    name: 'ANCHORFIELD FISHING',
+    name: '锚地钓鱼（ANCHORFIELD FISHING）',
     badge: 'NEW',
     tagline:
-      'Fish for the chaos→divine blessing, then crack the Anchorfield open - jackpot or go next.',
-    source: { label: 'Community strat', url: '' },
+      '钓取混沌→神圣祝福，然后打开锚地 - 要么中大奖要么下一把。',
+    source: { label: '社区策略', url: '' },
     guide: [
-      'Put ONE Anchorfield chart in - any of them, just reroll it to decent Quantity. One is all you need.',
-      'Fill the rest with increased Quantity charts, and reroll your junk to high quant with chaos.',
-      'Got the "+1 Chaos Orb per Rare Monster" border? Consider increased Rare Monsters charts instead of quant (adjacent-rares charts are free to spend by default).',
-      'Run the voyage normally, hunting ONE blessing: Chaos Orbs become Divine Orbs. Explore every area EXCEPT the Anchorfield - blast through it, open NO Sunken Loot there yet.',
-      'Found the blessing? Sprint back to the Anchorfield and open every single Sunken Loot - each drops a few chaos, and the 20% chaos→divine conversion turns them into Divines.',
-      'No blessing and ~6 lanterns left? Open the Anchorfield loot anyway for scraps, or just leave and go next - you are fishing for the jackpot, not peasant loot.',
+      '放入 ONE 张锚地海图 - 随便哪张，只要把它洗成不错的物品数量即可。一张就够。',
+      '其余格子放增加物品数量的海图，并用混沌石把垃圾海图洗成高数量。',
+      '洗出了“每稀有怪 +1 混沌石掉落”边框？考虑改用增加稀有怪物海图代替数量图（相邻稀有怪图默认可以自由消耗）。',
+      '正常跑图，只求 ONE 个祝福：混沌石变成神圣石。探索除锚地以外的所有区域 - 锚地直接碾过去，先不要开里面的沉没战利品。',
+      '找到祝福了？冲刺回锚地，打开每一个沉没战利品 - 每个都掉几个混沌石，20% 的混沌→神圣转化把它们变成神圣石。',
+      '没找到祝福且灯笼还剩 6 个左右？还是把锚地战利品开了换点零碎，或者直接走人进下一把 - 你钓的是头奖，不是平民战利品。',
     ],
     weights: {
       'self:quant': 10,
@@ -271,25 +271,25 @@ export const STRATEGIES: StrategyDef[] = [
       { cells: [0, 1, 2, 3, 4, 5, 6, 7, 8], areaTypes: ['anchorfield'], bonus: 40 },
     ],
     requirements: [
-      { areaTypes: ['anchorfield'], count: 1, label: 'Anchorfield chart' },
+      { areaTypes: ['anchorfield'], count: 1, label: '锚地海图' },
     ],
-    waitHint: 'Alc & Go or Speedrun until an Anchorfield chart drops - any rarity works.',
+    waitHint: '先跑点金就跑或竞速保险箱，直到掉落一张锚地海图 - 任何稀有度都行。',
     searchRegex: '"anchorfield|m q.*(1[2-9].|[2-9]..)%"',
   },
   {
     id: 'milky-speedrun',
-    name: 'Speedrun Strongboxes',
-    tagline: 'Milky’s interim farm - burn spare charts, crack boxes, get in, get out.',
-    source: { label: 'Milkybk_ - Allflame Buffs and My Strategy', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
+    name: '竞速保险箱（Speedrun Strongboxes）',
+    tagline: 'Milky 的过渡farm - 烧掉多余海图，开保险箱，进图出图。',
+    source: { label: 'Milkybk_ - 万火诅咒增益与我的策略', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
     guide: [
-      'Put exactly ONE Operative’s chart in the CENTRE - it’s the best (a few divines of scarabs per run); Diviner’s or Message-in-a-Bottle are the consistent fallbacks.',
-      'Roll charts to 110%+ Item Quantity BEFORE running them - they can’t be rolled after, and quantity scales the boxes.',
-      'Put your highest Item Quantity charts on the four sides.',
-      'Everything else is junk you don’t need for other strategies - corners just make the connectors line up.',
-      'Take Alchemy, Scouring and Exalted orbs in to juice every box before opening.',
-      'If a Filthscrabble border appears (a ~4,000-sulphur boss), the solver pins your highest-sulphur chart to its tile.',
-      'Speed matters: place lanterns, click everything, open the boxes, leave. Even a junk voyage yields a div or two of scattered loot.',
-      'Keeper charts for Divine, Meatfish and Magic Ethereal are held back by default; switch off only the protections you do not want in Solver Settings.',
+      '在正中心放 ONE 张特工图 - 它是最好的（每把几个神圣的圣甲虫）；预言家图或瓶中信息是稳定的备选。',
+      '跑图前先把海图洗到 110%+ 物品数量 - 跑完之后没法再洗，而数量会放大保险箱。',
+      '把最高物品数量的海图放四边。',
+      '其余都是其他策略不需要的垃圾 - 角落只是让连接线对齐。',
+      '带点金、重铸和崇高石进去，开箱前给每个保险箱上增益。',
+      '如果出现 Filthscrabble 边框（约 4,000 硫磺的 boss），求解器会把你的最高硫磺海图固定到那块格子上。',
+      '速度至上：放灯笼、点光一切、开箱、走人。就算垃圾图也能掉出一两个神圣的零散战利品。',
+      '神圣石、Meatfish 和魔法虚无的存图默认会被保留；不想保留的保护项可在“求解设置”中单独关闭。',
     ],
     weights: {
       'adjacent:opbox': 10,
@@ -317,22 +317,22 @@ export const STRATEGIES: StrategyDef[] = [
       { nearBorderId: 'b-octoboss', rewardStat: { stat: 'sulphur', per: 8 }, bonus: 0 },
     ],
     requirements: [
-      { modIds: SPEEDRUN_CENTER_MODS, count: 1, label: 'Diviner’s / Operative’s / Message chart (centre)' },
+      { modIds: SPEEDRUN_CENTER_MODS, count: 1, label: '预言家/特工/信息图（中心）' },
     ],
-    waitHint: 'Run manual boards until one drops.',
+    waitHint: '先手动跑图直到掉落一张。',
     searchRegex: '"bottle|divine|oper"',
   },
   {
     id: 'milky-meatfish',
-    name: 'Meatfish',
-    tagline: 'Milky’s big one - possessed, Pantheon-touched giga-starfish rares that rain uniques.',
-    source: { label: 'Milkybk_ - Allflame Buffs and My Strategy', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
+    name: 'Meatfish（肉鱼）',
+    tagline: 'Milky 的大杀器 - 被附身、万神殿加持的巨型海星稀有怪，暗金如雨下。',
+    source: { label: 'Milkybk_ - 万火诅咒增益与我的策略', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
     guide: [
-      'Milky’s full composition (his sheet): 2× Starfish, 1× Pantheon, 2× Sea-Pillars (corners), 2× Golden Lanterns, 1× Possessed Rares, 1× No-Equipment.',
-      'Starfish always top- and bottom-middle; Pantheon only ever right-middle; Golden Lantern preferably centre - any chart shape.',
-      '"Monsters cannot drop Equipment" is the jackpot piece - Rares Fracture works as the fallback. Optionally swap Pantheon for 4k Wisps.',
-      'Collect every lantern in the voyage: ≈280% Quantity, 840 Rarity. Kill all the giga-rares. Obtain Mageblood/Headhunter.',
-      'Very risky, all-or-nothing - don’t water it down. Speedrun boxes until you have the pieces.',
+      'Milky 的完整阵容（他的表）：2× 海星、1× 万神殿、2× 海柱（角落）、2× 黄金灯笼、1× 被附身稀有怪、1× 不掉落装备。',
+      '海星永远在上中和下中；万神殿只放右中；黄金灯笼最好居中 - 任意海图形状都行。',
+      '“怪物不会掉落装备”是头奖组件 - 稀有怪碎裂作为备选。可选：把万神殿换成 4k 精魄。',
+      '收集航程中所有灯笼：约 280% 数量、840 稀有度。杀光巨型稀有怪。获得猎首/法血。',
+      '风险极高，全押或全输 - 不要稀释它。先跑竞速保险箱直到凑齐组件。',
     ],
     weights: {
       'adjacent:star': 10,
@@ -364,29 +364,29 @@ export const STRATEGIES: StrategyDef[] = [
     layoutPenalty: 6,
     requirements: [
       // Milky's sheet composition (2+1+2+2+1+1 = 9 charts)
-      { modIds: ['adj-star-1', 'adj-star-2'], count: 2, label: 'Giant Starfish chart' },
-      { modIds: ['adj-pantheon', 'adj-wisps-1', 'adj-wisps-2'], count: 1, label: 'Pantheon (or 4k Wisp) chart' },
-      { areaTypes: ['sea-pillars'], count: 2, label: 'Sea-Pillar chart (corners)' },
-      { modIds: ['adj-lantern'], count: 2, label: 'Golden Lantern chart' },
-      { modIds: ['voy-possess'], count: 1, label: 'Possessed Rares chart' },
-      { modIds: ['voy-noequip', 'voy-fracture'], count: 1, label: 'No-Equipment (or Fracture) chart' },
+      { modIds: ['adj-star-1', 'adj-star-2'], count: 2, label: '巨型海星图' },
+      { modIds: ['adj-pantheon', 'adj-wisps-1', 'adj-wisps-2'], count: 1, label: '万神殿（或 4k 精魄）图' },
+      { areaTypes: ['sea-pillars'], count: 2, label: '海柱图（角落）' },
+      { modIds: ['adj-lantern'], count: 2, label: '黄金灯笼图' },
+      { modIds: ['voy-possess'], count: 1, label: '被附身稀有怪图' },
+      { modIds: ['voy-noequip', 'voy-fracture'], count: 1, label: '不掉落装备（或碎裂）图' },
     ],
-    waitHint: 'Speedrun Strongboxes in the meantime.',
+    waitHint: '期间先跑竞速保险箱。',
     searchRegex: '"cannot|poss|lantern|pantheon"',
     allowFractureCharts: true,
   },
   {
     id: 'milky-ethereal',
-    name: 'Magic Ethereal',
-    tagline: 'Milky’s magic-monster variant - wisps, lanterns and everything at least Magic.',
-    source: { label: 'Milkybk_ - Allflame Buffs and My Strategy', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
+    name: '魔法虚无（Magic Ethereal）',
+    tagline: 'Milky 的魔法怪物变体 - 精魄、灯笼，一切至少为魔法等级。',
+    source: { label: 'Milkybk_ - 万火诅咒增益与我的策略', url: 'https://www.youtube.com/watch?v=gVKQhYxeavk' },
     guide: [
-      '⚠ Field reports are underwhelming so far (Palsteron ran it: ~5 div) - Milky has moved to the rares build (Meatfish). Kept for reference.',
-      'Builds Milky’s exact board layout: 3 Corners, 4 T-junctions, 1 Crossing, 1 Straight - 11 connections.',
-      'Wisp charts on the four sides, Golden Lanterns on the corners, the Crossing chart dead centre.',
-      'Instead of rares, go wide on magic monsters: All Monsters at least Magic + increased Magic Monsters.',
-      'Use Infested Bathysphere zones - they spawn far more monsters to convert.',
-      'Leans harder on "Monsters cannot drop Equipment" than Meatfish - it’s the big multiplier here.',
+      '⚠ 实战反馈目前差强人意（Palsteron 跑了约 5 神圣）- Milky 已转向稀有怪build（Meatfish）。保留供参考。',
+      '还原 Milky 的精确棋盘布局：3 个角落、4 个 T 型、1 个十字、1 个直通 - 11 条连接。',
+      '精魄图放四边，黄金灯笼放角落，十字图正中间。',
+      '不堆稀有怪，改堆魔法怪物：所有怪物至少魔法 + 增加魔法怪物。',
+      '使用虫群浸染的深海潜水器区域 - 那里会生成多得多的怪物可供转化。',
+      '比 Meatfish 更依赖“怪物不会掉落装备” - 这里它是最大的倍率。',
     ],
     weights: {
       'adjacent:wisps': 10,
@@ -406,23 +406,23 @@ export const STRATEGIES: StrategyDef[] = [
     ],
     layout: ETHEREAL_LAYOUT,
     requirements: [
-      { modIds: ['adj-wisps-1', 'adj-wisps-2'], count: 4, label: 'Wildwood Wisp chart' },
-      { modIds: ['adj-lantern'], count: 3, label: 'Golden Lantern chart' },
+      { modIds: ['adj-wisps-1', 'adj-wisps-2'], count: 4, label: '荒野精魄图' },
+      { modIds: ['adj-lantern'], count: 3, label: '黄金灯笼图' },
     ],
-    waitHint: 'Speedrun Strongboxes in the meantime.',
+    waitHint: '期间先跑竞速保险箱。',
   },
   {
     id: 'divine-border-rares',
-    name: 'Divine Border Rares',
+    name: '神圣石边框稀有怪',
     tagline:
-      'Roll a Divine border, park a Sea-Pillar chart on it, and drown that tile in rares - every rare drops a Divine Orb.',
-    source: { label: 'Milky’s strat', url: '' },
+      '洗出神圣石边框，把海柱图放在上面，让那块格子淹没在稀有怪中 - 每个稀有怪掉一个神圣石。',
+    source: { label: 'Milky 的策略', url: '' },
     guide: [
-      'Reroll borders with Dead Man’s Sulphur until you hit "+1 Divine Orb per Rare Monster" - this is one of the mechanic’s two real jackpots.',
-      'Enter your borders on the board - the solver pins your Sea-Pillar chart to the Divine tile (its pillars rain extra rares into that exact area).',
-      'The treasure feeders are "+5 Strongboxes" adjacent charts: roll the boxes themselves for "Stream of Monsters" (+4 rares) and "of Rarity" (+3) - 7 rares per box, a Divine each. One +5 chart ≈ 35 Divines; three around the tile ≈ 105.',
-      'Starfish charts also feed it if you’re short on Strongbox charts.',
-      '5× Increased Rare Monsters charts fill the rest - every rare on that tile is a Divine drop.',
+      '用亡者硫磺重洗边框直到出现“每稀有怪 +1 神圣石掉落” - 这是该机制两个真正的头奖之一。',
+      '在棋盘上输入你的边框 - 求解器把你的海柱图固定到神圣石格子上（它的海柱会把额外稀有怪浇进那块区域）。',
+      '喂怪图是“+5 保险箱”相邻图：把保险箱本身洗出“怪物之流”（+4 稀有怪）和“稀有度”（+3）- 每箱 7 稀有怪，各一个神圣石。一张 +5 图 ≈ 35 神圣；围绕格子放三张 ≈ 105。',
+      '海星图在保险箱图不足时也可以喂。',
+      '5× 增加稀有怪物图填满其余 - 那块格子上的每个稀有怪都是一次神圣石掉落。',
     ],
     weights: {
       'adjacent:rare': 10,
@@ -444,42 +444,42 @@ export const STRATEGIES: StrategyDef[] = [
       { nearBorderId: 'b-divine', adjacentToBorder: true, modIds: ['adj-star-1', 'adj-star-2'], bonus: 15 },
     ],
     requirements: [
-      { areaTypes: ['sea-pillars'], count: 1, label: 'Sea-Pillar chart' },
+      { areaTypes: ['sea-pillars'], count: 1, label: '海柱图' },
       {
         modIds: ['adj-star-1', 'adj-star-2', 'adj-box-1', 'adj-box-2', 'adj-box-3'],
         count: 3,
-        label: 'Starfish or Strongbox chart',
+        label: '海星或保险箱图',
       },
-      { modIds: ['adj-rare-1', 'adj-rare-2', 'voy-rare'], count: 5, label: 'Increased Rares chart' },
+      { modIds: ['adj-rare-1', 'adj-rare-2', 'voy-rare'], count: 5, label: '增加稀有怪图' },
     ],
     // banking is more granular than readiness (issue #21): only the big
     // generic boxes (+2-4/+5) are Divine-mandatory - typed boxes cap at +3
     // and stay free for Speedrun; voyage-wide rares outrank adjacent ones
     bankTypes: [
-      { label: 'Sea-Pillar chart', areaTypes: ['sea-pillars'], keep: 1 },
-      { label: 'Giant Starfish chart', modIds: ['adj-star-1', 'adj-star-2'], keep: 3 },
-      { label: 'Strongbox chart (+2-4 / +5)', modIds: ['adj-box-2', 'adj-box-3'], keep: 3 },
-      { label: 'Strongbox chart (+1)', modIds: ['adj-box-1'], keep: 0 },
-      { label: 'Increased Rares chart (voyage-wide)', modIds: ['voy-rare'], keep: 6 },
-      { label: 'Increased Rares chart (adjacent)', modIds: ['adj-rare-1', 'adj-rare-2'], keep: 0 },
+      { label: '海柱图', areaTypes: ['sea-pillars'], keep: 1 },
+      { label: '巨型海星图', modIds: ['adj-star-1', 'adj-star-2'], keep: 3 },
+      { label: '保险箱图（+2-4 / +5）', modIds: ['adj-box-2', 'adj-box-3'], keep: 3 },
+      { label: '保险箱图（+1）', modIds: ['adj-box-1'], keep: 0 },
+      { label: '增加稀有怪图（全航行）', modIds: ['voy-rare'], keep: 6 },
+      { label: '增加稀有怪图（相邻）', modIds: ['adj-rare-1', 'adj-rare-2'], keep: 0 },
     ],
-    requiresBorderId: { id: 'b-divine', label: 'a "+1 Divine Orb" border roll (enter your borders)' },
-    waitHint: 'Speedrun Strongboxes until the pieces and the Divine border line up.',
+    requiresBorderId: { id: 'b-divine', label: '“+1 神圣石”边框词缀（先输入你的边框）' },
+    waitHint: '先跑竞速保险箱，直到凑齐组件并洗出神圣石边框。',
     searchRegex: '"rare monsters in all voy|strongbox"',
     allowRareImplicits: true,
   },
   {
     id: 'cutedog-divine-boxes',
-    name: 'Divine Strongboxes',
+    name: '神圣石保险箱',
     tagline:
-      'cutedog_’s Divine-border variant - Pelagic Abyss on the Divine tile, any strongboxes feeding it, 7 divines per rolled box.',
-    source: { label: 'cutedog_ (Twitch)', url: 'https://www.twitch.tv/cutedog_' },
+      'cutedog_ 的神圣石边框变体 - 远洋深渊放在神圣石格子上，任意保险箱喂它，每个洗好的保险箱 7 个神圣石。',
+    source: { label: 'cutedog_（Twitch）', url: 'https://www.twitch.tv/cutedog_' },
     guide: [
-      'Needs the "+1 Divine Orb per Rare" border. Put a Pelagic Abyss chart with high % Pack Size on that exact tile.',
-      '3× strongbox adjacent charts (ANY type) beside the Divine tile - each box they shoot in is up to 7 guaranteed divines.',
-      'Roll the Strongboxes: "3 additional Rares" prefix = 3 divines, "Stream of Monsters" prefix = 4. Both on one box = 7, difficult to roll.',
-      'Every other tile: voyage-wide increased Rare Monsters.',
-      'Buy good charts cheap on trade (link below) - whisper "fastge". Use the 120%+ quantity regex when browsing.',
+      '需要“每稀有怪 +1 神圣石掉落”边框。把高 % 怪物群规模的远洋深渊图放在那块格子上。',
+      '神圣石格子旁边放 3× 保险箱相邻图（任意类型）- 每张射进来的保险箱最多 7 个必掉神圣石。',
+      '洗保险箱：“额外 3 个稀有怪”前缀 = 3 神圣，“怪物之流”前缀 = 4。同一个箱子上两个都有 = 7，很难洗。',
+      '其余所有格子：全航行增加稀有怪物。',
+      '在交易站低价买好图（下方链接）- 私聊 “fastge”。浏览时用 120%+ 数量正则。',
     ],
     weights: {
       'voyage:rare': 10,
@@ -513,7 +513,7 @@ export const STRATEGIES: StrategyDef[] = [
       {
         areaTypes: ['pelagic-abyss'],
         count: 1,
-        label: 'Pelagic Abyss chart (high pack size)',
+        label: '远洋深渊图（高怪物群规模）',
       },
       {
         modIds: [
@@ -523,24 +523,24 @@ export const STRATEGIES: StrategyDef[] = [
           'adj-opbox-1', 'adj-opbox-2',
         ],
         count: 3,
-        label: 'Strongbox adjacent chart (any type)',
+        label: '保险箱相邻图（任意类型）',
       },
-      { modIds: ['voy-rare'], count: 5, label: 'Increased Rares (voyage) chart' },
+      { modIds: ['voy-rare'], count: 5, label: '增加稀有怪（全航行）图' },
     ],
     bankTypes: [
-      { label: 'Pelagic Abyss chart (high pack size)', areaTypes: ['pelagic-abyss'], keep: 1 },
-      { label: 'Strongbox chart (+2-4 / +5)', modIds: ['adj-box-2', 'adj-box-3'], keep: 3 },
-      { label: "Diviner's Strongbox chart", modIds: ['adj-divbox-1', 'adj-divbox-2'], keep: 0 },
-      { label: "Arcanist's Strongbox chart", modIds: ['adj-arcbox-1', 'adj-arcbox-2'], keep: 0 },
-      { label: "Operative's Strongbox chart", modIds: ['adj-opbox-1', 'adj-opbox-2'], keep: 0 },
-      { label: 'Increased Rares chart (voyage-wide)', modIds: ['voy-rare'], keep: 6 },
+      { label: '远洋深渊图（高怪物群规模）', areaTypes: ['pelagic-abyss'], keep: 1 },
+      { label: '保险箱图（+2-4 / +5）', modIds: ['adj-box-2', 'adj-box-3'], keep: 3 },
+      { label: '预言家保险箱图', modIds: ['adj-divbox-1', 'adj-divbox-2'], keep: 0 },
+      { label: '秘术家保险箱图', modIds: ['adj-arcbox-1', 'adj-arcbox-2'], keep: 0 },
+      { label: '特工保险箱图', modIds: ['adj-opbox-1', 'adj-opbox-2'], keep: 0 },
+      { label: '增加稀有怪图（全航行）', modIds: ['voy-rare'], keep: 6 },
     ],
-    requiresBorderId: { id: 'b-divine', label: 'a "+1 Divine Orb" border roll (enter your borders)' },
-    waitHint: 'Speedrun Strongboxes until the pieces and the Divine border line up.',
+    requiresBorderId: { id: 'b-divine', label: '“+1 神圣石”边框词缀（先输入你的边框）' },
+    waitHint: '先跑竞速保险箱，直到凑齐组件并洗出神圣石边框。',
     searchRegex: '"m q.*(1[2-9].|[2-9]..)%"',
     allowRareImplicits: true,
     extraLinks: [
-      { label: 'Trade search: cheap good charts', url: 'https://www.pathofexile.com/trade/search/Allflame/9zRn7YLRHK' },
+      { label: '交易搜索：便宜好图', url: 'https://www.pathofexile.com/trade/search/Allflame/9zRn7YLRHK' },
     ],
   },
 ]

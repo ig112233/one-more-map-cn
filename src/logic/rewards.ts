@@ -10,10 +10,10 @@ import { STAT_LABELS } from '../types'
 export type RewardGroup = 'voyage' | 'adjacent' | 'self' | 'border'
 
 export const GROUP_LABEL: Record<RewardGroup, string> = {
-  voyage: 'Whole voyage',
-  adjacent: 'Adjacent areas',
-  self: 'This area (chart)',
-  border: 'Border rolls',
+  voyage: '整个航行',
+  adjacent: '相邻区域',
+  self: '本区域（海图）',
+  border: '边框词缀',
 }
 export const GROUP_ORDER: RewardGroup[] = ['voyage', 'adjacent', 'self', 'border']
 

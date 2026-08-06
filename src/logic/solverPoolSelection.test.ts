@@ -45,7 +45,7 @@ describe('keep-count solve pools', () => {
     const { solvePool, heldBack, heldBackFor } = selectStrategySolvePool(rares, null, ALL_ON)
     expect(heldBack).toBe(6) // requirement 5 + 1 spare
     expect(solvePool).toHaveLength(2)
-    expect(heldBackFor).toContain('Divine Border Rares')
+    expect(heldBackFor).toContain('神圣石边框稀有怪')
   })
 
   it('ranks a piece type by rolls within the same tier', () => {
@@ -59,7 +59,7 @@ describe('keep-count solve pools', () => {
     ]
     const bank = selectPieceBank(
       pool,
-      { [keyOf('Increased Rares chart (voyage-wide)')]: 1 },
+      { [keyOf('增加稀有怪图（全航行）')]: 1 },
       ALL_ON,
     )
     expect(bank.has('rolled')).toBe(true)
@@ -95,7 +95,7 @@ describe('keep-count solve pools', () => {
     // opting typed boxes back in works
     const withDiviners = selectPieceBank(
       pool,
-      { [keyOf("Diviner's Strongbox chart")]: 1 },
+      { [keyOf('预言家保险箱图')]: 1 },
       ALL_ON,
     )
     expect(withDiviners.get('diviner')?.strategyId).toBe('cutedog-divine-boxes')
@@ -126,7 +126,7 @@ describe('keep-count solve pools', () => {
       keeps,
     )
     expect(solvePool).toHaveLength(0)
-    expect(heldBackFor).toEqual(['Meatfish'])
+    expect(heldBackFor).toEqual(['Meatfish（肉鱼）'])
   })
 
   it('lets the owning strategy spend its banked charts', () => {
@@ -150,7 +150,7 @@ describe('keep-count solve pools', () => {
     expect(selectStrategySolvePool(pool, null, ALL_ON).solvePool).toHaveLength(0)
     expect(
       selectStrategySolvePool(pool, null, ALL_ON, new Set(), {
-        [keyOf('No-Equipment (or Fracture) chart')]: 0,
+        [keyOf('不掉落装备（或碎裂）图')]: 0,
       }).solvePool,
     ).toHaveLength(1)
   })

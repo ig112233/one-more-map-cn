@@ -66,15 +66,15 @@ export function SolveBar({ state, activeStrategy, results, appliedIdx, onResults
         const notes: string[] = []
         const lockedCount = locked.filter(Boolean).length
         if (lockedCount > 0)
-          notes.push(`${lockedCount} locked chart${lockedCount === 1 ? '' : 's'} kept in place.`)
+          notes.push(`${lockedCount} 张锁定海图保持原位。`)
         if (heldBack > 0)
           notes.push(
-            `${heldBack} chart${heldBack === 1 ? '' : 's'} banked for ${heldBackFor.join(', ')}. Adjust keep counts in the library's 🔖 wizard.`,
+            `${heldBack} 张海图为 ${heldBackFor.join('、')} 存图。可在图库的 🔖 向导中调整存图数量。`,
           )
         if (solvePool.length < 9)
-          notes.push(`Only ${solvePool.length} spare charts - not enough for a full board.`)
+          notes.push(`只有 ${solvePool.length} 张多余海图 - 不足以凑满一板。`)
         else if (res.length && !res[0].valid)
-          notes.push('No fully runnable layout from these charts - best partial shown.')
+          notes.push('这些海图没有完全可运行的布局 - 展示最佳的部分布局。')
         setSolveNote(notes.join(' '))
       } finally {
         setBusy(false)
@@ -87,12 +87,12 @@ export function SolveBar({ state, activeStrategy, results, appliedIdx, onResults
       <div className="solve-row">
         <button className="solve-big" onClick={run} disabled={busy || state.pool.length === 0}>
           {busy ? (
-            'Solving…'
+            '求解中…'
           ) : (
             <>
-              Solve
+              求解
               <span className="solve-big-sub">
-                best board from {state.pool.length} chart{state.pool.length === 1 ? '' : 's'}
+                从 {state.pool.length} 张海图中找出最佳棋盘
                 {activeStrategy ? ` · ${activeStrategy.name}` : ''}
               </span>
             </>
@@ -101,16 +101,16 @@ export function SolveBar({ state, activeStrategy, results, appliedIdx, onResults
         <button
           className="solve-settings-btn"
           onClick={onOpenPlanner}
-          title="Sequence your whole library into a session of voyages"
+          title="把你的整个海图库排成一系列航行"
         >
-          📋<span className="solve-settings-label">Plan</span>
+          📋<span className="solve-settings-label">计划</span>
         </button>
         <button
           className="solve-settings-btn"
           onClick={onOpenSettings}
-          title="Connector rules, reward weights, chart protections, filler voyage and the best-charts regex"
+          title="连接规则、奖励权重、海图保护、填仓航行和最佳海图正则"
         >
-          ⚙<span className="solve-settings-label">Settings</span>
+          ⚙<span className="solve-settings-label">设置</span>
         </button>
       </div>
       {solveNote && <div className="muted small-note solve-bar-note">{solveNote}</div>}
@@ -124,25 +124,25 @@ export function SolveBar({ state, activeStrategy, results, appliedIdx, onResults
                 onClick={() => onApply(r, i)}
                 title={
                   r.valid
-                    ? 'Load this layout onto the board'
-                    : 'Not fully runnable (connector or reachability problem) - shown for reference'
+                    ? '把此布局载入棋盘'
+                    : '无法完全运行（连接或可达性问题）- 仅供参考'
                 }
               >
                 <span className="sr-rank">#{i + 1}</span>
                 <span className="sr-pts">{r.reward.toFixed(1)}</span>
-                <span className="sr-pts-label">pts</span>
+                <span className="sr-pts-label">分</span>
                 {appliedIdx === i ? (
-                  <span className="sr-badge on-board">on board</span>
+                  <span className="sr-badge on-board">已在棋盘</span>
                 ) : r.valid ? (
-                  <span className="sr-badge ok">✓ runnable</span>
+                  <span className="sr-badge ok">✓ 可运行</span>
                 ) : (
-                  <span className="sr-badge bad">✗ not runnable</span>
+                  <span className="sr-badge bad">✗ 不可运行</span>
                 )}
               </button>
             ))}
           </div>
           <div className="muted small-note solve-bar-note">
-            Ranked by your weights - click one to load it, then Copy into game below.
+            按你的权重排序 - 点击一个载入它，然后在下方面板点击复制进游戏。
           </div>
         </>
       )}

@@ -14,7 +14,7 @@ import { LATEST_UPDATE_DATE } from './data/updates'
 import { SessionPlanner } from './components/SessionPlanner'
 import { SaveWizard } from './components/SaveWizard'
 import { Tutorial } from './components/Tutorial'
-import { borderModById, voyageModById } from './data/mods'
+import { borderModById, modText, voyageModById } from './data/mods'
 import { strategyById } from './data/strategies'
 import { StrategiesPanel } from './components/StrategiesPanel'
 import { scoreBoard } from './logic/scoring'
@@ -154,12 +154,12 @@ export default function App() {
     const out: { label: string; strategyId: string }[] = []
     if (state.pool.some((c) => c.modIds.includes('voy-noequip')))
       out.push({
-        label: '"Monsters cannot drop Equipment" chart in your library - build the rares board around it',
+        label: '你的图库里有“怪物不会掉落装备”海图 - 围绕它构建稀有怪板',
         strategyId: 'milky-meatfish',
       })
     if (state.borders.includes('b-divine'))
       out.push({
-        label: '"+1 Divine Orb per Rare" border rolled - park a Sea-Pillar on it and feed it Strongboxes',
+        label: '洗出了“每稀有怪 +1 神圣石掉落”边框 - 放一张海柱图上去并喂它保险箱',
         strategyId: 'divine-border-rares',
       })
     return out.filter((j) => j.strategyId !== state.strategyId)
@@ -196,7 +196,7 @@ export default function App() {
     state.borders.forEach((id, seg) => {
       if (!id || !state.board[borderTouches(seg)]) return
       const mod = borderModById.get(id)
-      if (mod && isNotable(mod.text)) add(mod.id, mod.short ?? mod.text, mod.text)
+      if (mod && isNotable(mod.text)) add(mod.id, mod.short ?? modText(mod), modText(mod))
     })
     state.board.forEach((p) => {
       if (!p) return
@@ -204,7 +204,7 @@ export default function App() {
       if (!chart) return
       for (const modId of chart.modIds) {
         const mod = voyageModById.get(modId)
-        if (mod && isNotable(mod.text)) add(mod.id, mod.text, mod.text)
+        if (mod && isNotable(mod.text)) add(mod.id, modText(mod), modText(mod))
       }
     })
     return [...counts.values()]
@@ -237,7 +237,7 @@ export default function App() {
     }))
 
   const clearCharts = () => {
-    if (!window.confirm('Remove all charts from the library and clear the board? (Borders and weights are kept.)'))
+    if (!window.confirm('移除海图库中的所有海图并清空棋盘？（边框和权重会保留。）'))
       return
     setState((s) => ({ ...s, pool: [], board: emptyBoard() }))
     setSelectedChart(null)
@@ -269,8 +269,8 @@ export default function App() {
         return false
       })
       setVoyageMsg(
-        `Voyage finished: consumed ${consumed} chart${consumed === 1 ? '' : 's'}` +
-          (kept ? `, kept ${kept}` : ''),
+        `航行完成：消耗了 ${consumed} 张海图` +
+          (kept ? `，保留了 ${kept} 张` : ''),
       )
       window.setTimeout(() => setVoyageMsg(''), 4000)
       return {
@@ -380,7 +380,7 @@ export default function App() {
     const str = buildChartSearch(placed.filter(Boolean), others)
     try {
       await navigator.clipboard.writeText(str)
-      setSearchMsg('Copied!')
+      setSearchMsg('已复制！')
     } catch {
       setSearchMsg(str)
     }
@@ -391,10 +391,10 @@ export default function App() {
     const url = `${location.origin}${location.pathname}#${encodeShare(state)}`
     try {
       await navigator.clipboard.writeText(url)
-      setShareMsg('Link copied!')
+      setShareMsg('链接已复制！')
     } catch {
       window.location.hash = encodeShare(state)
-      setShareMsg('Link set in address bar')
+      setShareMsg('链接已写入地址栏')
     }
     window.setTimeout(() => setShareMsg(''), 2500)
   }
@@ -457,48 +457,47 @@ export default function App() {
           Allflame <span className="accent">Voyage Solver</span>
         </h1>
         <button className="tutorial-btn" onClick={() => setShowTutorial(true)}>
-          🧭 TUTORIAL · how to use this
+          🧭 教程 · 如何使用
         </button>
         <div className="header-right">
-          <span className="tag">PoE 3.29: Curse of the Allflame</span>
-          <button title="How it works" onClick={() => setShowOnboarding(true)}>
+          <span className="tag">PoE 3.29：万火诅咒</span>
+          <button title="工作原理" onClick={() => setShowOnboarding(true)}>
             ?
           </button>
           <button
             className={updatesSeen < LATEST_UPDATE_DATE ? 'updates-btn unseen' : 'updates-btn'}
-            title="What's new on the site"
+            title="网站更新内容"
             onClick={openUpdates}
           >
-            Updates
+            更新
           </button>
-          <button title="Browse all modifiers and switch off ones you don't want" onClick={() => setShowMods(true)}>
-            Mods{state.disabledMods.length > 0 ? ` (${state.disabledMods.length} off)` : ''}
+          <button title="浏览所有词缀并关掉你不想要的" onClick={() => setShowMods(true)}>
+            词缀{state.disabledMods.length > 0 ? `（${state.disabledMods.length} 关闭）` : ''}
           </button>
           <button
             className="theme-link"
             title={
               harvestTheme
-                ? 'Back to the Allflame theme'
-                : 'Harvest Edition, like the old garden planner sheets'
+                ? '回到 Allflame 主题'
+                : '收获季版，类似老花园规划表'
             }
             onClick={toggleTheme}
           >
             {harvestTheme ? '🔥' : '🌱'}
           </button>
-          <button onClick={share}>{shareMsg || 'Share layout'}</button>
+          <button onClick={share}>{shareMsg || '分享布局'}</button>
         </div>
       </header>
 
       {showAnnounce && (
         <div className="announce-banner">
           <span>
-            🆕 <strong>OCR border import is live!</strong> The Windows bulk importer now reads all
-            12 border modifiers straight off your screen - grab the updated script in the Import
-            panel.
+            🆕 <strong>OCR 边框导入上线！</strong> Windows 批量导入器现在可以直接从屏幕上读取全部
+            12 个边框词缀 - 到导入面板获取更新后的脚本。
           </span>
           <button
             className="announce-close"
-            title="Dismiss"
+            title="关闭"
             onClick={() => {
               setShowAnnounce(false)
               try {
@@ -607,9 +606,9 @@ export default function App() {
           {copySeq && (
             <div className="preserve-confirm copyseq">
               <div className="pc-head">
-                Place into game in this order (its square is glowing). Copy pastes an in-game search
-                string; Ctrl+Left-click the chart it finds. They fill bottom-left first. Step{' '}
-                {copySeq.step + 1} of {copySeq.order.length}.
+                按此顺序放入游戏（对应格子正在发光）。复制会生成游戏内搜索串；Ctrl+左键点击它找到的海图。
+                它们先填左下角。步骤{' '}
+                {copySeq.step + 1} / {copySeq.order.length}。
               </div>
               {(() => {
                 const c = chartMap.get(state.board[copySeq.order[copySeq.step]]!.chartUid)
@@ -619,7 +618,7 @@ export default function App() {
                     <div className="pc-name">{c.name}</div>
                     <div className="pc-sub">
                       {chartImplicit(c)}
-                      {c.shape ? ` · Shape: ${c.shape}` : ''}
+                      {c.shape ? ` · 形状：${c.shape}` : ''}
                     </div>
                   </>
                 )
@@ -627,12 +626,12 @@ export default function App() {
               <div className="copyseq-actions">
                 <button className="copyseq-go" onClick={copyCurrentAndAdvance}>
                   {copySeq.step + 1 >= copySeq.order.length
-                    ? '📋 Copy last & finish'
-                    : '📋 Copy & next'}
-                  <span className="copyseq-hint">or press Ctrl+C</span>
+                    ? '📋 复制最后一张并完成'
+                    : '📋 复制并下一张'}
+                  <span className="copyseq-hint">或按 Ctrl+C</span>
                 </button>
                 <button className="pc-lost" onClick={() => setCopySeq(null)}>
-                  Cancel
+                  取消
                 </button>
               </div>
             </div>
@@ -641,16 +640,16 @@ export default function App() {
           {preserveConfirm && (
             <div className="preserve-confirm">
               <div className="pc-head">
-                Preserved chart {preserveConfirm.index + 1} of {preserveConfirm.charts.length} (its
-                square is glowing). Did it actually survive the Voyage?
+                保留海图 {preserveConfirm.index + 1} / {preserveConfirm.charts.length}（对应格子正在发光）。
+                它真的在这次航行中存活了吗？
               </div>
               <div className="pc-name">{preserveConfirm.charts[preserveConfirm.index].name}</div>
               <div className="pc-actions">
                 <button className="pc-kept" onClick={() => decidePreserve(true)}>
-                  ✓ Kept it
+                  ✓ 保留了
                 </button>
                 <button className="pc-lost" onClick={() => decidePreserve(false)}>
-                  ✕ Was consumed
+                  ✕ 被消耗了
                 </button>
               </div>
             </div>
@@ -658,18 +657,18 @@ export default function App() {
 
           <div className={`conn-status ${conn.valid ? 'ok' : 'bad'}`}>
             {state.mode === 'any'
-              ? 'Connector rules ignored'
+              ? '已忽略连接规则'
               : conn.valid
-                ? '✓ Connector layout valid'
+                ? '✓ 连接布局有效'
                 : [
                     conn.mismatches > 0
-                      ? `✗ ${conn.mismatches} connector mismatch${conn.mismatches === 1 ? '' : 'es'}`
+                      ? `✗ ${conn.mismatches} 处连接不匹配`
                       : null,
                     conn.disconnected > 0
-                      ? `${conn.disconnected} chart${conn.disconnected === 1 ? '' : 's'} not linked to the ⚓ start`
+                      ? `${conn.disconnected} 张海图未连接到 ⚓ 起点`
                       : null,
                     conn.unfilled > 0
-                      ? `${conn.unfilled} empty square${conn.unfilled === 1 ? '' : 's'} (all 9 must be filled)`
+                      ? `${conn.unfilled} 个空格子（9 格必须全部填满）`
                       : null,
                   ]
                     .filter(Boolean)
@@ -678,29 +677,28 @@ export default function App() {
 
           {modCount.total > 0 && (
             <div className="modcount">
-              <span className="modcount-title">Voyage Mod Count</span>
-              <span className="modcount-item scope-self">This area {modCount.self}</span>
-              <span className="modcount-item scope-adjacent">Adjacent {modCount.adjacent}</span>
-              <span className="modcount-item scope-global">Whole voyage {modCount.global}</span>
-              <span className="modcount-item modcount-conn">🔗 {conn.connections} connections</span>
+              <span className="modcount-title">航行词缀计数</span>
+              <span className="modcount-item scope-self">本区域 {modCount.self}</span>
+              <span className="modcount-item scope-adjacent">相邻 {modCount.adjacent}</span>
+              <span className="modcount-item scope-global">整个航行 {modCount.global}</span>
+              <span className="modcount-item modcount-conn">🔗 {conn.connections} 条连接</span>
             </div>
           )}
 
           <div className="score-panel">
             <div className="score-total">
-              Voyage Rewards <strong>{score.total.toFixed(1)}</strong>
+              航行奖励 <strong>{score.total.toFixed(1)}</strong>
               <span className="spacer" />
               <button
                 onClick={copySearch}
                 disabled={state.board.every((p) => !p)}
-                title="Copy a search string for the in-game chart inventory that highlights exactly the charts on this board"
+                title="复制一段游戏内海图库存搜索串，可精确高亮这块棋盘上的海图"
               >
-                {searchMsg || '⌕ Copy in-game search'}
+                {searchMsg || '⌕ 复制游戏内搜索'}
               </button>
             </div>
             <div className="muted small-note" style={{ marginTop: 0 }}>
-              A relative score for comparing your layouts, based on your weights and estimated mod
-              values. Not exact loot value. See the actual contents below.
+              用于比较布局的相对分数，基于你的权重和估算的词缀价值。不是精确的战利品价值。详见下方实际内容。
             </div>
             <div className="reward-grid">
               {ALL_STATS.filter((s) => score.perStat[s] > 0)
@@ -712,15 +710,15 @@ export default function App() {
                   </div>
                 ))}
               {ALL_STATS.every((s) => score.perStat[s] === 0) && (
-                <div className="muted">Place charts to see bonuses</div>
+                <div className="muted">放置海图以查看加成</div>
               )}
             </div>
             {ALL_STATS.some((s) => score.perStat[s] > 0) && (
-              <div className="muted small-note">Average bonus per area across the Voyage.</div>
+              <div className="muted small-note">整个航行中每个区域的平均加成。</div>
             )}
             {notables.length > 0 && (
               <>
-                <div className="panel-title small">Guaranteed & Notable</div>
+                <div className="panel-title small">保底效果与亮点</div>
                 <div className="notable-list">
                   {notables.map((n) => (
                     <span key={n.label} className="notable-item" title={n.full}>
@@ -737,8 +735,8 @@ export default function App() {
         <section className="col solver-col">
           {jackpots.map((j) => (
             <div key={j.strategyId} className="jackpot-banner">
-              <span className="jackpot-label">🎰 JACKPOT: {j.label}.</span>
-              <button onClick={() => patch({ strategyId: j.strategyId })}>Switch strategy</button>
+              <span className="jackpot-label">🎰 头奖：{j.label}。</span>
+              <button onClick={() => patch({ strategyId: j.strategyId })}>切换策略</button>
             </div>
           ))}
           <StrategiesPanel

@@ -26,7 +26,7 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
     const { charts, rejected } = parseChartText(borderOcr.chartText)
     const notCharted = rejected.filter((r) => r.reason.startsWith('not charted'))
     if (charts.length === 0 && rejected.length === 0 && borderOcr.blockCount === 0) {
-      setMsg('No items recognised. Is this Ctrl+C item text?')
+      setMsg('没有识别到物品。这是 Ctrl+C 的物品文本吗？')
       return
     }
 
@@ -54,7 +54,7 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
     }
 
     const parts: string[] = []
-    if (charts.length) parts.push(`Imported ${charts.length} chart${charts.length === 1 ? '' : 's'}`)
+    if (charts.length) parts.push(`导入了 ${charts.length} 张海图`)
     // distinct physical charts always differ in their rolled values, so a big
     // batch of byte-identical imports means the bulk importer's mouse hovered
     // one item the whole sweep - bad grid calibration (issue #20)
@@ -64,32 +64,30 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
       const first = key(charts[0])
       if (charts.every((c) => key(c) === first))
         parts.push(
-          `⚠ all ${charts.length} are IDENTICAL - if this came from the bulk importer, its grid calibration is off (re-run the setup wizard, then Clear all charts and re-import)`,
+          `⚠ 全部 ${charts.length} 张完全相同 - 如果来自批量导入器，说明网格校准有误（重新运行设置向导，然后清空海图重新导入）`,
         )
     }
     if (borderOcr.blockCount > 0) {
       parts.push(
-        `matched ${borderOcr.matches.length}/${borderOcr.blockCount} border modifier${
-          borderOcr.blockCount === 1 ? '' : 's'
-        }`,
+        `匹配了 ${borderOcr.matches.length}/${borderOcr.blockCount} 个边框词缀`,
       )
     }
     if (notCharted.length)
       parts.push(
-        `skipped ${notCharted.length} uncharted (run them first to reveal their modifier)`,
+        `跳过了 ${notCharted.length} 张未绘图的（先跑一次以揭示其词缀）`,
       )
     const otherRejects = rejected.length - notCharted.length
-    if (otherRejects > 0) parts.push(`skipped ${otherRejects} unrecognised`)
+    if (otherRejects > 0) parts.push(`跳过了 ${otherRejects} 个无法识别的`)
     if (borderOcr.blockCount > 0 && borderOcr.matches.length === 0) {
       parts.push(
-        'no border tooltips recognised - kept your existing borders (recheck the border calibration in the script wizard)',
+        '没有识别到边框提示 - 保留了你现有的边框（请重新检查脚本向导中的边框校准）',
       )
     } else if (borderOcr.misses.length > 0) {
-      parts.push(`OCR unmatched at border${borderOcr.misses.length === 1 ? '' : 's'} ${borderOcr.misses
+      parts.push(`边框 ${borderOcr.misses
         .map((miss) => miss.index + 1)
-        .join(', ')}`)
+        .join('、')} 处 OCR 未匹配`)
     }
-    setMsg(parts.join('; ') || 'Nothing imported')
+    setMsg(parts.join('；') || '没有导入任何内容')
 
     // rare-implicit charts are the Divine strategies' fuel - flag them loudly
     // so a jackpot piece never slips into the library unnoticed
@@ -98,7 +96,7 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
     ).length
     setRareAlert(
       rares > 0
-        ? `${rares} Rare Monsters chart${rares === 1 ? '' : 's'} imported - Divine-strategy fuel! Locked 🔒 in the library until you run a Divine border board.`
+        ? `导入了 ${rares} 张稀有怪物海图 - 神圣石策略的燃料！在图库中 🔒 锁定，直到你跑神圣石边框板。`
         : '',
     )
   }, [onImport, onLoadState, text])
@@ -130,54 +128,54 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
     file.text().then((t) => {
       try {
         onLoadState({ ...defaultState(), ...JSON.parse(t) })
-        setMsg('State loaded from JSON')
+        setMsg('已从 JSON 载入状态')
       } catch {
-        setMsg('Invalid JSON file')
+        setMsg('无效的 JSON 文件')
       }
     })
   }
 
   const clearAll = () => {
-    if (window.confirm('Clear all charts, board and borders?')) onLoadState(defaultState())
+    if (window.confirm('清空所有海图、棋盘和边框？')) onLoadState(defaultState())
   }
 
   return (
     <div className="import-panel">
-      <div className="panel-title">Import</div>
+      <div className="panel-title">导入</div>
       <textarea
         rows={5}
         placeholder={
-          'Copy a chart in game (Ctrl+C), then press Ctrl+V anywhere on this page to import it. The Windows bulk importer also fills all 12 border modifiers with local OCR.'
+          '在游戏中复制一张海图（Ctrl+C），然后在页面上任意位置按 Ctrl+V 即可导入。Windows 批量导入器还可以用本地 OCR 填充全部 12 个边框词缀。'
         }
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
       <div className="import-actions">
         <button onClick={() => doParse()} disabled={!text.trim()}>
-          Parse & Add
+          解析并添加
         </button>
         <button
-          title="Generate random charts to try out the tool"
+          title="生成随机海图以试用工具"
           onClick={() => {
             onImport(generateDemoCharts(25))
-            setMsg('Added 25 random demo charts')
+            setMsg('已添加 25 张随机演示海图')
           }}
         >
-          🎲 Demo ×25
+          🎲 演示 ×25
         </button>
-        <button onClick={exportJson} title="Save your charts to a JSON file">
-          Export
+        <button onClick={exportJson} title="把海图保存到 JSON 文件">
+          导出
         </button>
-        <label className="file-btn" title="Load charts from a JSON file">
-          Load
+        <label className="file-btn" title="从 JSON 文件载入海图">
+          载入
           <input
             type="file"
             accept=".json"
             onChange={(e) => e.target.files?.[0] && importJson(e.target.files[0])}
           />
         </label>
-        <button onClick={clearAll} title="Clear all charts, board and borders">
-          Reset
+        <button onClick={clearAll} title="清空所有海图、棋盘和边框">
+          重置
         </button>
       </div>
       {msg && <div className="muted pad">{msg}</div>}
@@ -191,70 +189,62 @@ export function ImportPanel({ onImport, state, onLoadState }: Props) {
       )}
 
       <details className="ahk-help">
-        <summary>🎲 Rolling & keeping charts (Milky's regexes)</summary>
+        <summary>🎲 洗海图与存图（Milky 的正则）</summary>
         <p className="muted">
-          Charts can't be rolled after running, so roll first (quantity scales strongboxes). Paste
-          these into the in-game chart search - from Milky's sheet.
+          海图跑完后无法再洗，所以先洗再跑（数量会放大保险箱）。把这些粘贴进游戏内海图搜索 - 来自 Milky 的表。
         </p>
         <div className="roll-regex-row">
-          <span className="roll-regex-label">All good mods (keepers)</span>
+          <span className="roll-regex-label">所有好词缀（保留）</span>
           <input readOnly value={ALL_GOOD_MODS_REGEX} onFocus={(e) => e.target.select()} />
         </div>
         <div className="roll-regex-row">
-          <span className="roll-regex-label">120%+ quantity roll</span>
+          <span className="roll-regex-label">120%+ 数量</span>
           <input readOnly value={'"m q.*(1[2-9].|[2-9]..)%"'} onFocus={(e) => e.target.select()} />
         </div>
         <div className="roll-regex-row">
-          <span className="roll-regex-label">75%+ sulphur (save for Filthscrabble)</span>
+          <span className="roll-regex-label">75%+ 硫磺（留给 Filthscrabble）</span>
           <input readOnly value={'"sul.*(7[5-9]|[89].|\\d..)%"'} onFocus={(e) => e.target.select()} />
         </div>
       </details>
 
       <details className="ahk-help">
-        <summary>🖱️ Bulk-import charts + board borders from PoE (Windows OCR)</summary>
+        <summary>🖱️ 从 PoE 批量导入海图 + 棋盘边框（Windows OCR）</summary>
         <p className="muted">
-          A self-contained AutoHotkey script copies every chart, reads all 12 board-border
-          tooltips with Windows OCR, and pastes everything here in one go. OCR stays on your PC;
-          no screenshots are uploaded.
+          一个自包含的 AutoHotkey 脚本会复制每一张海图，用 Windows OCR 读取全部 12 个棋盘边框提示，
+          并一次性粘贴到这里。OCR 完全在本机进行；不会上传任何截图。
         </p>
         <a className="ahk-dl" href={`${import.meta.env.BASE_URL}voyage-import.ahk`} download>
-          ⬇ Download voyage-import.ahk
+          ⬇ 下载 voyage-import.ahk
         </a>
         <ol className="ahk-steps">
           <li>
-            Install{' '}
+            安装{' '}
             <a href="https://www.autohotkey.com/" target="_blank" rel="noopener noreferrer">
               AutoHotkey v2
             </a>{' '}
-            (Windows only).
+            （仅限 Windows）。
           </li>
           <li>
-            In PoE (Windowed or Windowed Fullscreen), open the Voyage board so your chart panel is
-            fully visible and not scrolled.
+            在 PoE（窗口化或窗口化全屏）中打开航行棋盘，确保海图面板完全可见且未滚动。
           </li>
           <li>
-            Keep this tab open - the script finds it by its title, <em>Allflame Voyage Solver</em>.
-            Click once on this page first so it has focus.
+            保持此标签页打开 - 脚本会按标题 <em>Allflame Voyage Solver</em> 找到它。先点一下本页使其获得焦点。
           </li>
           <li>
-            Double-click the script - a <strong>setup wizard</strong> opens on first run and walks
-            you through calibrating the chart grid and all 12 border positions, step by step, with
-            live progress. (Rerun it any time: tray icon → <em>Setup wizard…</em>.)
+            双击脚本 - 首次运行会打开<strong>设置向导</strong>，带你一步步校准海图网格和全部 12 个边框位置，带实时进度。
+            （随时可重新运行：托盘图标 → <em>设置向导…</em>。）
           </li>
           <li>
-            Daily use: <kbd>F9</kbd> copies the charts, scans the 12 borders with OCR, and imports
-            both · <kbd>Shift+F9</kbd> imports just the borders · <kbd>F10</kbd> aborts. Border OCR
-            can take around 15–30 seconds on a 4K screen.
+            日常使用：<kbd>F9</kbd> 复制海图并用 OCR 扫描 12 个边框后一并导入 · <kbd>Shift+F9</kbd> 只导入边框 · <kbd>F10</kbd> 中止。
+            4K 屏幕下边框 OCR 大约需要 15-30 秒。
           </li>
           <li>
-            Don't like the keys? Tray icon → <em>Keybinds…</em> - every hotkey is rebindable and
-            saved between sessions. Calibration keys only work while the wizard is open, so they
-            can't collide with your PoE binds mid-map.
+            不喜欢按键？托盘图标 → <em>按键绑定…</em> - 每个热键都可重新绑定并在会话间保存。校准按键只在向导打开时生效，
+            因此不会与你在 PoE 中的绑定冲突。
           </li>
         </ol>
         <p className="muted small">
-          If PoE runs as administrator, run the script as administrator too, or its keypresses
-          won't reach the game. Don't touch the mouse or keyboard while it's running.
+          如果 PoE 以管理员身份运行，请也以管理员身份运行脚本，否则按键无法到达游戏。运行期间不要碰鼠标或键盘。
         </p>
       </details>
     </div>

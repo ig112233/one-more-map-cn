@@ -111,14 +111,15 @@ const PATHS: Record<Stat, JSX.Element> = {
 }
 
 // currency + scarabs are game inventory art; the rest are AI-generated in PoE style
+// new URL() lets Vite inline/bundle these; plain string paths would 404 in single-file builds
 const IMAGE_ICONS: Partial<Record<Stat, string>> = {
-  currency: './icon-currency.png',
-  scarabs: './icon-scarabs.png',
-  rares: './icon-rares.png',
-  sulphur: './icon-sulphur.png',
-  packsize: './icon-packsize.png',
-  quantity: './icon-quantity.png',
-  preserve: './icon-preserve.png',
+  currency: new URL('../assets/icons/icon-currency.png', import.meta.url).href,
+  scarabs: new URL('../assets/icons/icon-scarabs.png', import.meta.url).href,
+  rares: new URL('../assets/icons/icon-rares.png', import.meta.url).href,
+  sulphur: new URL('../assets/icons/icon-sulphur.png', import.meta.url).href,
+  packsize: new URL('../assets/icons/icon-packsize.png', import.meta.url).href,
+  quantity: new URL('../assets/icons/icon-quantity.png', import.meta.url).href,
+  preserve: new URL('../assets/icons/icon-preserve.png', import.meta.url).href,
 }
 
 /** Mini connector-shape glyph, like the line marks on in-game chart items. */

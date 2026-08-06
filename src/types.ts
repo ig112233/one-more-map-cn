@@ -44,65 +44,65 @@ export const ALL_STATS: Stat[] = [
 
 /** compact labels for tight UI spots (tiles, pills, grid squares) */
 export const STAT_SHORT: Record<Stat, string> = {
-  currency: 'Currency',
-  gold: 'Gold',
-  scarabs: 'Scarabs',
-  divcards: 'Div Cards',
-  essences: 'Essences',
-  spirits: 'Spirits',
-  wisps: 'Wisps',
-  rares: 'Rares',
-  magicmonsters: 'Magic',
-  sulphur: 'Sulphur',
-  packsize: 'Pack Size',
-  quantity: 'Quantity',
-  rarity: 'Rarity',
-  uniques: 'Uniques',
-  treasure: 'Treasure',
-  exp: 'XP',
-  preserve: 'Preserve',
+  currency: '通货',
+  gold: '金币',
+  scarabs: '圣甲虫',
+  divcards: '预言卡',
+  essences: '精髓',
+  spirits: '幽魂',
+  wisps: '精魄',
+  rares: '稀有怪',
+  magicmonsters: '魔法怪',
+  sulphur: '硫磺',
+  packsize: '群规模',
+  quantity: '数量',
+  rarity: '稀有度',
+  uniques: '暗金',
+  treasure: '宝藏',
+  exp: '经验',
+  preserve: '保留',
 }
 
 export const STAT_LABELS: Record<Stat, string> = {
-  currency: 'Currency',
-  gold: 'Gold',
-  scarabs: 'Scarabs',
-  divcards: 'Divination Cards',
-  essences: 'Imprisoned Monsters',
-  spirits: 'Tormented Spirits',
-  wisps: 'Wildwood Wisps',
-  rares: 'Rare Monsters',
-  magicmonsters: 'Magic Monsters',
-  sulphur: "Dead Man's Sulphur",
-  packsize: 'Pack Size',
-  quantity: 'Item Quantity',
-  rarity: 'Item Rarity',
-  uniques: 'Unique Items',
-  treasure: 'Treasure',
-  exp: 'Experience',
-  preserve: 'Chart Preservation',
+  currency: '通货',
+  gold: '金币',
+  scarabs: '圣甲虫',
+  divcards: '预言卡',
+  essences: '被囚禁的怪物（精髓）',
+  spirits: '折磨之灵',
+  wisps: '荒野精魄',
+  rares: '稀有怪物',
+  magicmonsters: '魔法怪物',
+  sulphur: '亡者硫磺',
+  packsize: '怪物群规模',
+  quantity: '物品数量',
+  rarity: '物品稀有度',
+  uniques: '暗金物品',
+  treasure: '宝藏',
+  exp: '经验',
+  preserve: '海图保留',
 }
 
 /** What each reward axis covers, shown as a hover tooltip on the weight sliders. */
 export const STAT_DESC: Record<Stat, string> = {
-  currency: 'Currency orbs - from Arcanist Strongboxes and border orb-drop rolls (Divine, Exalted, Chaos…)',
-  gold: 'Gold - from equipment-to-Gold conversion mods and ground-effect charts',
-  scarabs: 'Scarabs - from Operative Strongboxes and scarab border rolls',
-  divcards: 'Divination Cards - from Diviner Strongboxes and Stacked Deck borders',
-  essences: 'Imprisoned Monsters (Essences) - extra essence-caged monsters in adjacent areas',
-  spirits: 'Tormented Spirits - extra spirit cages in adjacent areas',
-  wisps: 'Wildwood Wisps - monster empowerment (more juice, harder fights)',
-  rares: 'Rare Monsters - increased rare count, packs, and rare-drop borders',
-  magicmonsters: 'Magic Monsters - increased magic monster count',
-  sulphur: "Dead Man's Sulphur - the league's crafting currency",
-  packsize: 'Pack Size - more monsters per area (crabs, octopi, sea beasts, drowned)',
-  quantity: 'Item Quantity - increased quantity of items dropped',
-  rarity: 'Item Rarity - increased rarity of items dropped',
-  uniques: 'Unique Items - ring/amulet/belt drop-as-unique chances',
+  currency: '通货宝珠 - 来自秘术家保险箱与边框掉落宝珠的词缀（神圣石、崇高石、混沌石…）',
+  gold: '金币 - 来自装备转金币词缀与地面效果海图',
+  scarabs: '圣甲虫 - 来自特工保险箱与圣甲虫边框词缀',
+  divcards: '预言卡 - 来自预言家保险箱与堆叠卡组边框',
+  essences: '被囚禁的怪物（精髓） - 相邻区域中额外被精髓囚禁的怪物',
+  spirits: '折磨之灵 - 相邻区域中额外的幽魂牢笼',
+  wisps: '荒野精魄 - 怪物强化（更肥的收益，更难打的战斗）',
+  rares: '稀有怪物 - 增加稀有怪数量、群组与稀有怪掉落边框',
+  magicmonsters: '魔法怪物 - 增加魔法怪物数量',
+  sulphur: "亡者硫磺 - 本联赛的工艺通货",
+  packsize: '怪物群规模 - 每个区域更多怪物（螃蟹、章鱼、海兽、溺亡者）',
+  quantity: '物品数量 - 增加掉落物品的数量',
+  rarity: '物品稀有度 - 增加掉落物品的稀有度',
+  uniques: '暗金物品 - 戒指/项链/腰带以暗金掉落的几率',
   treasure:
-    "Treasure - extra lootable objects that spawn in the area: Strongboxes, Treasure Anchors, Pirate's Lockers, Barrels, Messages in Bottles, exotic Fish, Golden Lanterns, Altars, and treasure minibosses",
-  exp: 'Experience - increased experience gain from XP borders',
-  preserve: 'Chart Preservation - chance not to consume adjacent charts when starting a Voyage',
+    '宝藏 - 区域中额外生成的可拾取物件：保险箱、宝藏锚点、海盗储物柜、木桶、瓶中信息、珍稀鱼类、黄金灯笼、祭坛与宝藏小头目',
+  exp: '经验 - 来自经验边框的额外经验获取',
+  preserve: '海图保留 - 开始航行时不消耗相邻海图的几率',
 }
 
 /** Who a voyage modifier applies to. */
@@ -118,6 +118,8 @@ export interface ModEffect {
 export interface VoyageModDef {
   id: string
   text: string
+  /** Simplified-Chinese display text (fallback to text when absent) */
+  zh?: string
   /** localized clipboard lines that map to this canonical modifier id */
   aliases?: readonly string[]
   /** compact label for count-based mods where the scored percent is only a heuristic */
@@ -132,6 +134,8 @@ export interface VoyageModDef {
 export interface BorderModDef {
   id: string
   text: string
+  /** Simplified-Chinese display text (fallback to text when absent) */
+  zh?: string
   /** alternate live or legacy tooltip text accepted by the border OCR matcher */
   aliases?: readonly string[]
   /** compact display label for the border pill */

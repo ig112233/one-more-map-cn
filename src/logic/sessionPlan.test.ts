@@ -49,7 +49,7 @@ describe('session planner', () => {
     for (const id of ['divine-border-rares', 'cutedog-divine-boxes']) {
       const e = plan.entries.find((x) => x.strategyId === id)
       expect(e?.status).toBe('waiting')
-      expect(e?.note).toContain('border')
+      expect(e?.note).toContain('边框')
     }
 
     expect(plan.allocated + plan.leftover).toBe(pool.length)
@@ -59,7 +59,7 @@ describe('session planner', () => {
     const plan = planSession(junk(12), emptyBorders())
     const meatfish = plan.entries.find((e) => e.strategyId === 'milky-meatfish')
     expect(meatfish?.status).toBe('waiting')
-    expect(meatfish?.note).toContain('Giant Starfish')
+    expect(meatfish?.note).toContain('巨型海星')
     // junk still burns fine
     const alcgo = plan.entries.find((e) => e.strategyId === 'alc-and-go')
     expect(alcgo?.runs).toBe(1)

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { BORDER_MODS, VOYAGE_MODS } from '../data/mods'
+import { BORDER_MODS, VOYAGE_MODS, modText } from '../data/mods'
 import type { Scope } from '../types'
 import { STAT_SHORT } from '../types'
 
@@ -29,22 +29,22 @@ export function ModBrowser({ disabled, onToggle, onBulk, onClose }: Props) {
     const byScope = (scope: Scope) =>
       VOYAGE_MODS.filter((m) => m.scope === scope).map((m) => ({
         id: m.id,
-        text: m.text,
+        text: modText(m),
         short: m.short,
         value: valueLabel(m.effects),
       }))
     return [
-      { title: 'Area Modifiers', hint: "a chart's own area", mods: byScope('self') },
-      { title: 'Adjacent Modifiers', hint: 'neighbouring areas', mods: byScope('adjacent') },
-      { title: 'Voyage Modifiers', hint: 'the whole voyage', mods: byScope('global') },
+      { title: '区域词缀', hint: '海图自身的区域', mods: byScope('self') },
+      { title: '相邻词缀', hint: '相邻区域', mods: byScope('adjacent') },
+      { title: '航行词缀', hint: '整个航行', mods: byScope('global') },
       {
-        title: 'Border Modifiers',
-        hint: 'Corruption Currents',
+        title: '边框词缀',
+        hint: '腐蚀流',
         mods: BORDER_MODS.map((m) => ({
           id: m.id,
-          text: m.text,
+          text: modText(m),
           short: m.short,
-          value: valueLabel(m.effects) ?? (m.magnitude ? `${m.magnitude}% Magnitude` : undefined),
+          value: valueLabel(m.effects) ?? (m.magnitude ? `${m.magnitude}% 强度` : undefined),
         })),
       },
     ]
@@ -60,17 +60,16 @@ export function ModBrowser({ disabled, onToggle, onBulk, onClose }: Props) {
     <div className="onboard-backdrop" onClick={onClose}>
       <div className="onboard modbrowser" onClick={(e) => e.stopPropagation()}>
         <div className="panel-title">
-          Chart Modifiers
+          海图词缀
           <span className="spacer" />
-          <button onClick={onClose}>Done</button>
+          <button onClick={onClose}>完成</button>
         </div>
         <p className="onboard-intro" style={{ marginBottom: 8 }}>
-          Every modifier the solver knows about. Untick any you do not care about and it will be
-          worth nothing in scoring. Your choices are saved and carry across updates.
-          {disabledCount > 0 ? ` (${disabledCount} off)` : ''}
+          求解器认识的所有词缀。取消勾选你不关心的词缀，它在计分中的价值将变为 0。你的选择会被保存并跨更新保留。
+          {disabledCount > 0 ? `（${disabledCount} 关闭）` : ''}
         </p>
         <input
-          placeholder="Filter modifiers…"
+          placeholder="筛选词缀…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           style={{ marginBottom: 10 }}
@@ -87,7 +86,7 @@ export function ModBrowser({ disabled, onToggle, onBulk, onClose }: Props) {
                 <span className="muted mb-group-hint">{g.hint}</span>
                 <span className="spacer" />
                 <button className="mb-bulk" onClick={() => onBulk(ids, anyOn)}>
-                  {anyOn ? 'Disable all' : 'Enable all'}
+                  {anyOn ? '全部禁用' : '全部启用'}
                 </button>
               </div>
               <div className="mb-list">

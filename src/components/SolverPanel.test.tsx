@@ -26,7 +26,7 @@ describe('solver strategy protections', () => {
   it('shows all three keeper categories enabled by default', () => {
     const html = renderReservations()
 
-    expect(html).toContain('Protect charts for other strategies')
+    expect(html).toContain('为其他策略保护海图')
     expect(reservationInput(html, 'divine')).toContain('checked=""')
     expect(reservationInput(html, 'meatfish')).toContain('checked=""')
     expect(reservationInput(html, 'ethereal')).toContain('checked=""')
@@ -42,7 +42,7 @@ describe('solver strategy protections', () => {
   it('offers all three toggles in every mode - the bank applies everywhere', () => {
     for (const strategyId of [null, 'milky-meatfish', 'divine-border-rares']) {
       const html = renderPanel(strategyId)
-      expect(html).toContain('Protect charts for other strategies')
+      expect(html).toContain('为其他策略保护海图')
       expect(reservationInput(html, 'divine')).toContain('checked=""')
       expect(reservationInput(html, 'meatfish')).toContain('checked=""')
       expect(reservationInput(html, 'ethereal')).toContain('checked=""')

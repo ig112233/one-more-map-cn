@@ -5,24 +5,24 @@ interface Props {
 
 const STEPS: { title: string; body: string }[] = [
   {
-    title: '1 · Collect Charts',
-    body: 'Lost Charts drop from Deepwater encounters while mapping. Run them with Valerie aboard the Sovereign to chart them. This reveals their implicit modifier.',
+    title: '1 · 收集海图',
+    body: '地图刷怪时，深水遭遇会掉落失落海图。带着瓦莱丽登上“君主号”跑图即可绘图。这会揭示海图的隐式词缀。',
   },
   {
-    title: '2 · Add them here',
-    body: 'Ctrl+C a chart in game and paste it into the Import panel, or add charts manually in the library. No charts yet? Hit 🎲 Demo ×25 to explore with a random pool.',
+    title: '2 · 添加到本站',
+    body: '在游戏中 Ctrl+C 复制海图，粘贴到导入面板；也可以在图库中手动添加。还没有海图？点 🎲 演示 ×25 用随机池子探索一下。',
   },
   {
-    title: '3 · Set the board',
-    body: 'The Voyage is a 3×3 grid starting at the bottom-left ⚓ square. The 12 border segments ("Corruption Currents") buff the squares they touch. Corners get two, the centre none. Enter your current rolls or 🎲 randomise. In game they reroll with Dead Man\'s Sulphur.',
+    title: '3 · 设置棋盘',
+    body: '航行是 3×3 网格，从左下角 ⚓ 格开始。12 个边框段（“腐蚀流”）会增益它们接触的格子。角落两个、中心没有。输入你当前的洗出结果或 🎲 随机生成。游戏中它们用亡者硫磺重洗。',
   },
   {
-    title: '4 · Weigh your loot',
-    body: 'Tell the solver what you value: currency, scarabs, div cards, sulphur… The weights drive everything: chart values in the library, the board score, and the best-charts regex.',
+    title: '4 · 权衡你的战利品',
+    body: '告诉求解器你重视什么：通货、圣甲虫、预言卡、硫磺……权重驱动一切：图库中的海图价值、棋盘分数和最佳海图正则。',
   },
   {
-    title: '5 · Solve',
-    body: 'Solve finds the highest-value arrangement that keeps every chart connected. Click a result to load it, tweak by hand if you like, then Copy in-game search to highlight exactly those charts in your stash.',
+    title: '5 · 求解',
+    body: '求解会找出让每张海图都保持连接的最高价值布局。点击结果载入，想手动微调也行，然后复制游戏内搜索来在仓库中高亮那些海图。',
   },
 ]
 
@@ -30,10 +30,9 @@ export function Onboarding({ onClose, onDemo }: Props) {
   return (
     <div className="onboard-backdrop" onClick={onClose}>
       <div className="onboard" onClick={(e) => e.stopPropagation()}>
-        <div className="panel-title">Plan your Voyage</div>
+        <div className="panel-title">规划你的航行</div>
         <p className="onboard-intro">
-          Build the most valuable 3×3 Voyage from your charted Charts, solved automatically
-          around connector shapes, adjacency, and border rolls.
+          用你已绘制的海图构建最有价值的 3×3 航行，围绕连接形状、相邻关系和边框洗出结果自动求解。
         </p>
         {STEPS.map((s) => (
           <div key={s.title} className="onboard-step">
@@ -42,10 +41,10 @@ export function Onboarding({ onClose, onDemo }: Props) {
           </div>
         ))}
         <div className="onboard-scopes">
-          Modifier colours:&nbsp;
-          <span className="scope-self">■ chart's own area</span>&nbsp;·&nbsp;
-          <span className="scope-adjacent">■ adjacent areas</span>&nbsp;·&nbsp;
-          <span className="scope-global">■ whole voyage</span>
+          词缀颜色：&nbsp;
+          <span className="scope-self">■ 海图自身的区域</span>&nbsp;·&nbsp;
+          <span className="scope-adjacent">■ 相邻区域</span>&nbsp;·&nbsp;
+          <span className="scope-global">■ 整个航行</span>
         </div>
         <div className="onboard-actions">
           <button
@@ -55,9 +54,9 @@ export function Onboarding({ onClose, onDemo }: Props) {
               onClose()
             }}
           >
-            Try it with 25 demo charts
+            用 25 张演示海图试试
           </button>
-          <button onClick={onClose}>Start planning</button>
+          <button onClick={onClose}>开始规划</button>
         </div>
       </div>
     </div>

@@ -42,22 +42,22 @@ function Readiness({
     ]
     return (
       <div className="strat-notready">
-        ⚠ You don't have the pieces - avoid this voyage and wait. Missing: {parts.join(', ')}.
+        ⚠ 你没有这些组件 - 先别跑这个航行，等一等。缺少：{parts.join('、')}。
         {strategy.waitHint ? ` ${strategy.waitHint}` : ''}
       </div>
     )
   }
   return (
     <div className="strat-ready">
-      ✓ Pieces ready:{' '}
+      ✓ 组件已齐：{' '}
       {reqs
         .map(
           (r) =>
             `${Math.min(r.have, r.count)}/${r.count}× ${r.label}${
-              r.have > r.count ? ` (+${r.have - r.count} spare)` : ''
+              r.have > r.count ? `（多 ${r.have - r.count} 张）` : ''
             }`,
         )
-        .join(', ')}
+        .join('、')}
     </div>
   )
 }
@@ -71,8 +71,8 @@ function RegexRow({ regex }: { regex: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <div className="strat-regex-row">
-      <span className="strat-regex-label" title="Paste into the in-game chart search to highlight this strategy's keeper charts">
-        Keeper search
+      <span className="strat-regex-label" title="粘贴进游戏内海图搜索，以高亮此策略的存图">
+        存图搜索
       </span>
       <input readOnly value={regex} onFocus={(e) => e.target.select()} />
       <button
@@ -82,7 +82,7 @@ function RegexRow({ regex }: { regex: string }) {
           window.setTimeout(() => setCopied(false), 1500)
         }}
       >
-        {copied ? '✓' : 'Copy'}
+        {copied ? '✓' : '复制'}
       </button>
     </div>
   )
@@ -94,20 +94,19 @@ export function StrategiesPanel({ activeId, pool, borders, onSelect }: Props) {
   return (
     <div className="strategies">
       <div className="panel-title">
-        Strategies
-        {activeId && <span className="strat-live-badge">ACTIVE</span>}
+        策略
+        {activeId && <span className="strat-live-badge">激活中</span>}
       </div>
       <div className="muted small-note" style={{ marginTop: 0 }}>
-        Curated community strategies. Picking one overrides your reward weights and steers the
-        solver until you switch it off.
+        精选社区策略。选择一个会覆盖你的奖励权重并引导求解器，直到你把它关掉。
       </div>
 
       <button
         className={`strat-card strat-none ${activeId === null ? 'active' : ''}`}
         onClick={() => onSelect(null)}
       >
-        <span className="strat-name">None (manual)</span>
-        <span className="strat-tagline">Use your own reward weights below.</span>
+        <span className="strat-name">无（手动）</span>
+        <span className="strat-tagline">在下面使用你自己的奖励权重。</span>
       </button>
 
       {STRATEGIES.map((s) => {
@@ -118,7 +117,7 @@ export function StrategiesPanel({ activeId, pool, borders, onSelect }: Props) {
             <button
               className="strat-head"
               onClick={() => setExpanded(isOpen ? null : s.id)}
-              title="Show details"
+              title="显示详情"
             >
               <span className="strat-name">
                 {s.name}
@@ -159,7 +158,7 @@ export function StrategiesPanel({ activeId, pool, borders, onSelect }: Props) {
               className={`strat-use ${isActive ? 'on' : ''}`}
               onClick={() => onSelect(isActive ? null : s.id)}
             >
-              {isActive ? '✓ Active - click to turn off' : 'Use this strategy'}
+              {isActive ? '✓ 激活中 - 点击关闭' : '使用此策略'}
             </button>
           </div>
         )
