@@ -471,6 +471,7 @@ Calibrated() => (TLx != 0 && TLy != 0 && BRx != 0 && BRy != 0)
 IsChartText(text) {
     return InStr(text, "Item Class: Chart")
         || InStr(text, "아이템 종류: 해도")
+        || (InStr(text, "物品类别") && InStr(text, "海图"))
 }
 
 ExactBordersCalibrated() {
