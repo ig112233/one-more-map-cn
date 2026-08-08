@@ -201,6 +201,26 @@ for (const variant of borderMatchVariants) {
   }
 }
 
+/** Variant-level frequency inflates bigrams shared across sibling tiers or
+ * other families (量提 from 数量提高 appears in b-rare-1/2/3 and both
+ * b-quantconn tiers; 有怪/稀有 are shared with the currency-drop family).
+ * Count instead per distinct sentence template (digits stripped), so a
+ * bigram confined to at most two families is still a usable keyword. */
+const cjkFamilyFrequency = new Map<string, number>()
+const cjkFamilies = new Set<string>()
+for (const variant of borderMatchVariants) {
+  if (!HAN_RE.test(variant.matchText)) continue
+  cjkFamilies.add(cjkNormalize(variant.matchText).replace(/\d+/g, ''))
+}
+for (const familyKey of cjkFamilies) {
+  const seen = new Set(cjkTokens(familyKey))
+  for (const token of seen) {
+    if (HAN_RE.test(token)) {
+      cjkFamilyFrequency.set(token, (cjkFamilyFrequency.get(token) ?? 0) + 1)
+    }
+  }
+}
+
 const isDigitToken = (t: string) => /^\d+$/.test(t)
 
 /** Multiset Dice over the Han characters of a CJK-normalized string. */
@@ -227,16 +247,24 @@ function cjkSimilarity(expected: string, actual: string): number {
   const aTokens = cjkTokens(actual)
   if (eTokens.length === 0 || aTokens.length === 0) return 0
 
-  // Keyword gate: the candidate must contain at least one distinctive Han
+  // Keyword gate: the candidate must share at least one distinctive Han
   // bigram of the expected text (e.g. 黄金/灯笼, 秽物/攀行, 通货/圣甲虫),
   // which keeps 通货总增 and 圣甲虫总增 from cross-matching each other.
-  const hasKeyword = eTokens.some(
-    (t) =>
-      HAN_RE.test(t) &&
-      (cjkBigramFrequency.get(t) ?? 99) <= 3 &&
-      aTokens.includes(t),
+  // Two tiers: a bigram seen in at most three variants is a strong keyword;
+  // families whose distinctive bigrams are inflated by sibling tiers
+  // (相邻区域的稀有怪数量提高X% vs b-rareconn/b-quantconn) fall back to a
+  // family-level check (at most two distinct sentence templates) and pay a
+  // small confidence penalty. Candidates sharing no keyword are rejected.
+  const sharedKeywords = eTokens.filter((t) => HAN_RE.test(t) && aTokens.includes(t))
+  const strongKeyword = sharedKeywords.some(
+    (t) => (cjkBigramFrequency.get(t) ?? 99) <= 3,
   )
-  if (!hasKeyword) return 0
+  if (
+    !strongKeyword &&
+    !sharedKeywords.some((t) => (cjkFamilyFrequency.get(t) ?? 99) <= 2)
+  ) {
+    return 0
+  }
 
   const eSet = new Set(eTokens.filter((t) => !isDigitToken(t)))
   const aSet = new Set(aTokens.filter((t) => !isDigitToken(t)))
@@ -245,6 +273,10 @@ function cjkSimilarity(expected: string, actual: string): number {
   const bigramDice = eSet.size + aSet.size === 0 ? 0 : (2 * sharedBigram) / (eSet.size + aSet.size)
   const unigramDice = hanUnigramDice(expected, actual)
   let confidence = 0.6 * bigramDice + 0.4 * unigramDice
+
+  // Family-tier keywords are weaker than variant-distinctive ones, so they
+  // pay a small confidence penalty (same spirit as the numeric-tier guard).
+  if (!strongKeyword) confidence *= 0.9
 
   // Tier guard (same philosophy as the word path): never guess a tier number
   // the OCR did not read from the same tooltip line.

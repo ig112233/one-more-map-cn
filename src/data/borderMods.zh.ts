@@ -30,6 +30,9 @@ type BorderModId = (typeof BORDER_MODS)[number]['id']
  *
  * Confirmed CN-client sentence patterns (from the corpus):
  *   - 相邻区域的X提高Y%            (b-pack-2, b-mag-1)
+ *   - 相邻区域的稀有怪数量提高Y%    (b-rare-1, player-verified 2026-08; the
+ *                                    b-rareconn wording 稀有怪物数量 is a
+ *                                    different mod, do not copy it here)
  *   - 相邻区域中找到的X总增Y%       (b-curr-2)
  *   - 相邻区域包括Y个额外的X        (b-crabs-1)
  *   - 相邻区域中X按每条连接提高Y%   (b-rareconn-2)
@@ -64,17 +67,17 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'translated-candidate',
   },
   'b-rare-1': {
-    text: '相邻区域中稀有怪物数量提高50%',
-    source: 'translated-candidate',
+    text: '相邻区域的稀有怪数量提高50%',
+    source: 'client-screenshot',
   },
   'b-rare-2': {
-    text: '相邻区域中稀有怪物数量提高75%',
-    source: 'translated-candidate',
+    text: '相邻区域的稀有怪数量提高75%',
+    source: 'confirmed-numeric-variant',
     derivedFrom: 'b-rare-1',
   },
   'b-rare-3': {
-    text: '相邻区域中稀有怪物数量提高100%',
-    source: 'translated-candidate',
+    text: '相邻区域的稀有怪数量提高100%',
+    source: 'confirmed-numeric-variant',
     derivedFrom: 'b-rare-1',
   },
   'b-beasts-1': {
