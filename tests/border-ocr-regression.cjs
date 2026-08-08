@@ -175,6 +175,31 @@ for (const [expectedId, evidence] of Object.entries(CHINESE_BORDER_MOD_EVIDENCE)
   )
 }
 
+// Player-reported CN-client wording (2026-08): the 掉落一个额外X currency-drop
+// sentence, the count-less 污秽蟹群 crab sentence, and the 怪物 rendering of
+// the rare-count sentence. Alias rows are not covered by the evidence loop
+// above, so pin them down explicitly.
+const zhPlayerReported = [
+  ['b-rare-1', '相邻区域的稀有怪物数量提高50%'],
+  ['b-rare-2', '相邻区域的稀有怪物数量提高75%'],
+  ['b-rare-3', '相邻区域的稀有怪物数量提高100%'],
+  ['b-exalt', '相邻区域的稀有怪物掉落一个额外崇高石'],
+  ['b-divine', '相邻区域的稀有怪物掉落一个额外神圣石'],
+  ['b-scarabdrop', '相邻区域的稀有怪物掉落一个额外圣甲虫'],
+  ['b-crabs-1', '相邻区域包含污秽蟹群'],
+  ['b-exalt', '相邻区域的稀有怪物额外掉落 1 个崇高石'],
+  ['b-divine', '相邻区域的稀有怪物额外掉落 1 个神圣石'],
+  ['b-scarabdrop', '相邻区域的稀有怪物额外掉落 1 个圣甲虫'],
+]
+for (const [expectedId, tooltip] of zhPlayerReported) {
+  const result = parseBorderOcrPayload(block(tooltip))
+  assert.equal(
+    result.matches[0]?.id,
+    expectedId,
+    `zh reported ${expectedId} was parsed as ${result.matches[0]?.id ?? 'MISS'}: ${tooltip}`,
+  )
+}
+
 const unspacedPackSize = parseBorderOcrPayload(block('相邻区域怪物群规模提高16%'))
 assert.equal(unspacedPackSize.matches[0]?.id, 'b-pack-1')
 

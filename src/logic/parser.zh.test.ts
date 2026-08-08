@@ -51,6 +51,21 @@ describe('Chinese client support', () => {
     expect(chart.modIds).toEqual(['adj-octo-1'])
   })
 
+  it('resolves the Deep-Water rare-count implicit from its CN client wording', () => {
+    // poedb renders the adjacent-rare chart implicit as 相邻区域的稀有怪物数量
+    // 提高 30%/60%; the CN client chart tooltip keeps that spacing (the border
+    // tooltip is unspaced, but chart Ctrl+C copies are spaced).
+    const t30 = parseOnlyChart(
+      chineseChart.replace('相邻区域包含 8(8-10) 个额外的章鱼群', '相邻区域的稀有怪物数量提高 30%'),
+    )
+    const t60 = parseOnlyChart(
+      chineseChart.replace('相邻区域包含 8(8-10) 个额外的章鱼群', '相邻区域的稀有怪物数量提高 60%'),
+    )
+
+    expect(t30.modIds).toEqual(['adj-rare-1'])
+    expect(t60.modIds).toEqual(['adj-rare-2'])
+  })
+
   it('keeps explicit downside lines in rawText but drops structural lines', () => {
     const chart = parseOnlyChart(chineseChart)
 

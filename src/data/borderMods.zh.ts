@@ -9,6 +9,11 @@ export interface ChineseBorderModEvidence {
   text: string
   source: ChineseBorderEvidenceSource
   derivedFrom?: string
+  /** Secondary client wordings that must also resolve to this border id.
+   * Used where two client renditions of the same mod coexist (e.g. the
+   * 稀有怪/稀有怪物 rare-count variants, or the count-less 污秽蟹群
+   * crab sentence). Every alias is matched through the same CJK matcher. */
+  aliases?: string[]
 }
 
 type BorderModId = (typeof BORDER_MODS)[number]['id']
@@ -32,7 +37,18 @@ type BorderModId = (typeof BORDER_MODS)[number]['id']
  *   - 相邻区域的X提高Y%            (b-pack-2, b-mag-1)
  *   - 相邻区域的稀有怪数量提高Y%    (b-rare-1, player-verified 2026-08; the
  *                                    b-rareconn wording 稀有怪物数量 is a
- *                                    different mod, do not copy it here)
+ *                                    different mod, do not copy it here. The
+ *                                    怪物 form 相邻区域的稀有怪物数量提高Y%
+ *                                    still resolves via the fuzzy CJK path but
+ *                                    is deliberately NOT an alias row, to keep
+ *                                    the 的/中 b-rare vs b-rareconn split)
+ *   - 相邻区域的稀有怪物掉落一个额外X (b-exalt/b-divine/b-scarabdrop,
+ *                                    player-reported 2026-08 verbatim client
+ *                                    wording; the older 额外掉落 1 个X form is
+ *                                    kept as an alias)
+ *   - 相邻区域包含污秽蟹群          (b-crabs-1 alias, player-reported 2026-08:
+ *                                    the count-less Corrupted-Crab sentence the
+ *                                    client shows for the crab-pack border)
  *   - 相邻区域中找到的X总增Y%       (b-curr-2)
  *   - 相邻区域包括Y个额外的X        (b-crabs-1)
  *   - 相邻区域中X按每条连接提高Y%   (b-rareconn-2)
@@ -40,9 +56,11 @@ type BorderModId = (typeof BORDER_MODS)[number]['id']
  *   - 相邻海图在开始航行时有Y%的几率不被消耗 (b-keep-1)
  *   - 相邻区域包含一个X            (b-locker)
  *
- * Still unverified (may drift from the client): the currency-drop family
- * (b-ancient…b-scarabdrop, b-support), b-izaro/b-anchor measure words,
- * b-decks/b-pirates/b-magicmods/b-minmagic/b-octoboss/b-crabboss/b-sulphdrop.
+ * Still unverified (may drift from the client): the rest of the currency-drop
+ * family (b-ancient…b-chaos/b-vaal/b-gcp/b-chrome/b-regret/b-blessed/b-regal,
+ * b-support), b-izaro/b-anchor measure words, b-decks/b-pirates/b-magicmods/
+ * b-minmagic/b-octoboss/b-crabboss/b-sulphdrop. The verified 掉落一个额外X
+ * template most likely carries across that family.
  *
  * Note the CN client renders these tooltips WITHOUT spaces between words
  * (相邻区域中找到的通货总增75%), so the OCR matcher compares space-free forms.
@@ -97,6 +115,11 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
   'b-crabs-1': {
     text: '相邻区域包括8个额外的螃蟹群',
     source: 'client-screenshot',
+    // The client also shows the count-less 污秽蟹群 (Corrupted Crab packs)
+    // sentence for the crab-pack border mod (player-reported 2026-08). No
+    // count survives OCR, so the tier cannot be known; the matcher resolves
+    // it to the base tier like the other count-less unique sentences.
+    aliases: ['相邻区域包含污秽蟹群'],
   },
   'b-crabs-2': {
     text: '相邻区域包括12个额外的螃蟹群',
@@ -158,12 +181,17 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'translated-candidate',
   },
   'b-divine': {
-    text: '相邻区域的稀有怪物额外掉落 1 个神圣石',
-    source: 'translated-candidate',
+    text: '相邻区域的稀有怪物掉落一个额外神圣石',
+    source: 'client-screenshot',
+    aliases: ['相邻区域的稀有怪物额外掉落 1 个神圣石'],
   },
   'b-exalt': {
-    text: '相邻区域的稀有怪物额外掉落 1 个崇高石',
-    source: 'translated-candidate',
+    // Player-reported client wording (2026-08): 掉落一个额外崇高石. The old
+    // translated form 额外掉落 1 个崇高石 is kept as an alias for imports
+    // made before the wording was confirmed.
+    text: '相邻区域的稀有怪物掉落一个额外崇高石',
+    source: 'client-screenshot',
+    aliases: ['相邻区域的稀有怪物额外掉落 1 个崇高石'],
   },
   'b-annul': {
     text: '相邻区域的稀有怪物额外掉落 1 个剥离石',
@@ -241,8 +269,9 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'translated-candidate',
   },
   'b-scarabdrop': {
-    text: '相邻区域的稀有怪物额外掉落 1 个圣甲虫',
-    source: 'translated-candidate',
+    text: '相邻区域的稀有怪物掉落一个额外圣甲虫',
+    source: 'client-screenshot',
+    aliases: ['相邻区域的稀有怪物额外掉落 1 个圣甲虫'],
   },
   'b-curr-1': {
     text: '相邻区域中找到的通货总增50%',

@@ -34,6 +34,8 @@ interface BorderMatchVariant {
 const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
   const korean = KOREAN_BORDER_MOD_EVIDENCE[mod.id as keyof typeof KOREAN_BORDER_MOD_EVIDENCE]
   const chinese = CHINESE_BORDER_MOD_EVIDENCE[mod.id as keyof typeof CHINESE_BORDER_MOD_EVIDENCE]
+  const chineseAliases: readonly string[] =
+    chinese && 'aliases' in chinese ? chinese.aliases : []
   return [
     { id: mod.id, canonicalText: mod.text, matchText: mod.text },
     ...(mod.aliases ?? []).map((matchText) => ({
@@ -45,7 +47,14 @@ const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
       ? [{ id: mod.id, canonicalText: mod.text, matchText: korean.text }]
       : []),
     ...(chinese
-      ? [{ id: mod.id, canonicalText: mod.text, matchText: chinese.text }]
+      ? [
+          { id: mod.id, canonicalText: mod.text, matchText: chinese.text },
+          ...chineseAliases.map((matchText) => ({
+            id: mod.id,
+            canonicalText: mod.text,
+            matchText,
+          })),
+        ]
       : []),
   ]
 })
@@ -133,12 +142,24 @@ const HAN_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
 
 /** CJK canonical form: NFKC + lowercase; keep Han, a-z, 0-9 only. Removing all
  * whitespace absorbs both the unspaced client text and poedb's spaced
- * rendering into one comparable form. */
+ * rendering into one comparable form. Han numerals are folded to digits so
+ * 掉落一个额外崇高石 and 掉落1个额外崇高石 compare identically (the client
+ * writes counters with 一个/两个, the poedb form with 1 个). */
 function cjkNormalize(text: string): string {
   return text
     .normalize('NFKC')
     .toLowerCase()
     .replace(/[’`]/g, "'")
+    .replace(/零/g, '0')
+    .replace(/一/g, '1')
+    .replace(/二|两/g, '2')
+    .replace(/三/g, '3')
+    .replace(/四/g, '4')
+    .replace(/五/g, '5')
+    .replace(/六/g, '6')
+    .replace(/七/g, '7')
+    .replace(/八/g, '8')
+    .replace(/九/g, '9')
     .replace(/[^a-z0-9\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/gu, '')
 }
 
