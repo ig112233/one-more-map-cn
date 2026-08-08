@@ -66,6 +66,11 @@ BorderPreviewDelay := 900 ; ms per point during the Ctrl+F4 visual preview
 PasteDelay    := 90    ; ms after the single big paste
 ClipTimeout   := 0.2   ; seconds to wait for Ctrl+C (only empty cells wait the full time)
 OcrTimeout    := 90    ; seconds before a stuck Windows OCR scan is stopped
+; Override the border-OCR recognition language. Leave empty to auto-detect.
+; The CN client (PathOfExile_x64.exe, same name as the international client,
+; so it cannot be told apart) needs "zh-CN" plus the Windows Simplified-
+; Chinese OCR language feature installed.
+OcrLanguage   := ""
 ; If it ever MISSES a chart, raise HoverDelay ~10ms at a time (the cursor
 ; isn't settling before Ctrl+C). If the final paste drops some, raise PasteDelay.
 ; ----------------------------------------
@@ -915,6 +920,8 @@ RunOcrHelper(arguments, cancellable := true) {
 
 PreferredOcrLanguage() {
     global PoeWinTitle
+    if (OcrLanguage != "")
+        return OcrLanguage
     try {
         processName := WinGetProcessName(PoeWinTitle)
         if RegExMatch(processName, "i)_KG\.exe$")
