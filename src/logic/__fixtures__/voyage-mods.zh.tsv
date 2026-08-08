@@ -1,0 +1,173 @@
+# voyage-mods.zh.tsv — poedb.cn "Map Deep Water Chart Mods /144" 中文词缀语料
+#
+# 来源: https://poedb.tw/cn/Sandy_Seabed_Chart 页 "Map Deep Water Chart Mods /144" 标签页
+# 抓取日期: 2026-08-06。poedb.cn 直接使用国服客户端 stat_descriptions.txt 渲染。
+# 状态: poedb 渲染文本 —— 尚未与真实国服客户端 Ctrl+C 复制文本逐条比对验证。
+# 用途: 中文客户端支持的中文词缀候选词表；入库 mods.ts 的 aliases 前必须用
+#       真实客户端文本复核（沿用 borderMods.ko.ts 的 client-screenshot 溯源制度）。
+#
+# 列: modId<TAB>scope<TAB>appEnglish<TAB>poedbChinese<TAB>level<TAB>preSuf<TAB>notes
+#   modId       app 词缀 id；self 行使用 cm-<stat>-<value>（值不在 app 词池时带 "(poedb)" 标记）
+#   scope       self | adjacent | global | uncharted-implicit
+#   appEnglish  app 的 canonical 英文文本；self 行为按 app 句式模板生成
+#   poedbChinese poedb.cn 渲染文本；poedb 用 <br> 分行处在本文件用 ／ 连接
+#   level       poedb 词缀等级（self/adj/voy 行的 tier 参考）
+#   preSuf      poedb 标注的前缀/后缀/传奇
+#   notes       差异与注意事项
+#
+# 已知差异（需用客户端复制文本裁定，勿直接采信）:
+#  1) 数值档位: poedb quantity=25/28/32/40/55、rarity=16/22/30/38；
+#     app 词池 quantity=20/28/32/45、rarity=12/18/20/30；
+#     真实复制样本(fixtures)出现过 quantity 20/32、rarity 20。
+#  2) 奖励行范围措辞: poedb 渲染为"相邻区域中找到的…提高 X%"，但韩文客户端
+#     复制文本为"이 지역에서 발견하는…30% 증가"(此区域)。CN 客户端的实际
+#     范围措辞与 headerStats 标签(物品数量: +X% (强化))需实测。
+#  3) roll 格式: poedb 显示 "(1-2)"，游戏内复制文本为 "1(1-2)" 内联格式（韩文样本如此）。
+#  4) app 的 zh 显示字段是人工意译（如"相邻区域额外包含 1-2 个被囚禁的怪物"），
+#     与 poedb/客户端原文（"相邻区域包含 (1-2) 个额外被囚禁的怪物"）不同，不可混用。
+#
+modId	scope	appEnglish	poedbChinese	level	preSuf	notes
+self-quant-25	self	25% increased Quantity of Items found in this Area	怪物有 20% 的几率避免元素异常状态／相邻区域中找到的物品数量提高 25%	1	后缀	downside: 元素异常状态避免；quantity 25 不在 app 词池(app: 20/28/32/45)
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物有 40% 的几率避免元素异常状态／相邻区域中找到的物品数量提高 32%	68	后缀	downside: 元素异常状态避免；= cm-quant-32
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物有 60% 的几率避免元素异常状态／相邻区域中找到的物品数量提高 40%	80	后缀	downside: 元素异常状态避免；quantity 40 不在 app 词池
+self-quant-55	self	55% increased Quantity of Items found in this Area	怪物有 80% 的几率避免元素异常状态／相邻区域中找到的物品数量提高 55%	83	后缀	downside: 元素异常状态避免；quantity 55 不在 app 词池
+self-quant-25	self	25% increased Quantity of Items found in this Area	怪物的物理减伤提高 (5-8)%／相邻区域中找到的物品数量提高 25%	1	前缀	downside: 物理减伤 (5-8)%
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物的物理减伤提高 (9-13)%／相邻区域中找到的物品数量提高 32%	68	前缀	downside: 物理减伤 (9-13)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物的物理减伤提高 (14-20)%／相邻区域中找到的物品数量提高 40%	80	前缀	downside: 物理减伤 (14-20)%
+self-quant-55	self	55% increased Quantity of Items found in this Area	怪物的物理减伤提高 (21-35)%／相邻区域中找到的物品数量提高 55%	83	前缀	downside: 物理减伤 (21-35)%
+self-quant-25	self	25% increased Quantity of Items found in this Area	怪物生命总增 (10-20)%／怪物免疫晕眩／相邻区域中找到的物品数量提高 25%	1	前缀	downside: 生命总增 (10-20)% + 免疫晕眩(特殊行)
+self-quant-25	self	25% increased Quantity of Items found in this Area	怪物生命总增 (10-19)%／相邻区域中找到的物品数量提高 25%	1	前缀	downside: 生命总增 (10-19)%
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物生命总增 (20-34)%／相邻区域中找到的物品数量提高 32%	68	前缀	downside: 生命总增 (20-34)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物生命总增 (35-45)%／相邻区域中找到的物品数量提高 40%	80	前缀	downside: 生命总增 (35-45)%
+self-quant-55	self	55% increased Quantity of Items found in this Area	怪物生命总增 (46-60)%／相邻区域中找到的物品数量提高 55%	83	前缀	downside: 生命总增 (46-60)%
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物伤害提高 (10-14)%／相邻区域中找到的亡者硫磺提高 30%	1	前缀	downside: 伤害 (10-14)%；= cm-sulph-30
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物伤害提高 (15-20)%／相邻区域中找到的亡者硫磺提高 30%	68	前缀	downside: 伤害 (15-20)%
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物伤害提高 (21-25)%／相邻区域中找到的亡者硫磺提高 30%	80	前缀	downside: 伤害 (21-25)%
+self-sulph-45	self	45% increased Dead Man's Sulphur found in this Area	怪物伤害提高 (26-35)%／相邻区域中找到的亡者硫磺提高 45%	83	前缀	downside: 伤害 (26-35)%；= cm-sulph-45
+self-rarity-16	self	16% increased Rarity of Items found in this Area	怪物造成的 (5-8)% 额外物理伤害视为火焰伤害／相邻区域中找到的物品稀有度提高 16%	1	前缀	downside: 物理转火焰 (5-8)%；rarity 16 不在 app 词池(app: 12/18/20/30)
+self-rarity-22	self	22% increased Rarity of Items found in this Area	怪物造成的 (9-14)% 额外物理伤害视为火焰伤害／相邻区域中找到的物品稀有度提高 22%	68	前缀	downside: 物理转火焰 (9-14)%；rarity 22 不在 app 词池
+self-rarity-30	self	30% increased Rarity of Items found in this Area	怪物造成的 (15-20)% 额外物理伤害视为火焰伤害／相邻区域中找到的物品稀有度提高 30%	80	前缀	downside: 物理转火焰 (15-20)%；= cm-rarity-30
+self-rarity-38	self	38% increased Rarity of Items found in this Area	怪物造成的 (21-35)% 额外物理伤害视为火焰伤害／相邻区域中找到的物品稀有度提高 38%	83	前缀	downside: 物理转火焰 (21-35)%；rarity 38 不在 app 词池
+self-rarity-16	self	16% increased Rarity of Items found in this Area	怪物造成的 (5-8)% 额外物理伤害视为冰霜伤害／相邻区域中找到的物品稀有度提高 16%	1	前缀	downside: 物理转冰霜 (5-8)%
+self-rarity-22	self	22% increased Rarity of Items found in this Area	怪物造成的 (9-14)% 额外物理伤害视为冰霜伤害／相邻区域中找到的物品稀有度提高 22%	68	前缀	downside: 物理转冰霜 (9-14)%
+self-rarity-30	self	30% increased Rarity of Items found in this Area	怪物造成的 (15-20)% 额外物理伤害视为冰霜伤害／相邻区域中找到的物品稀有度提高 30%	80	前缀	downside: 物理转冰霜 (15-20)%
+self-rarity-38	self	38% increased Rarity of Items found in this Area	怪物造成的 (21-35)% 额外物理伤害视为冰霜伤害／相邻区域中找到的物品稀有度提高 38%	83	前缀	downside: 物理转冰霜 (21-35)%
+self-rarity-16	self	16% increased Rarity of Items found in this Area	怪物造成的 (5-8)% 额外物理伤害视为闪电伤害／相邻区域中找到的物品稀有度提高 16%	1	前缀	downside: 物理转闪电 (5-8)%
+self-rarity-22	self	22% increased Rarity of Items found in this Area	怪物造成的 (9-14)% 额外物理伤害视为闪电伤害／相邻区域中找到的物品稀有度提高 22%	68	前缀	downside: 物理转闪电 (9-14)%
+self-rarity-30	self	30% increased Rarity of Items found in this Area	怪物造成的 (15-20)% 额外物理伤害视为闪电伤害／相邻区域中找到的物品稀有度提高 30%	80	前缀	downside: 物理转闪电 (15-20)%
+self-rarity-38	self	38% increased Rarity of Items found in this Area	怪物造成的 (21-35)% 额外物理伤害视为闪电伤害／相邻区域中找到的物品稀有度提高 38%	83	前缀	downside: 物理转闪电 (21-35)%
+self-pack-14	self	14% increased Pack size	怪物移动速度加快 10%／怪物攻击速度加快 10%／怪物施法速度加快 10%／相邻区域的怪物群规模提高 14%	68	前缀	downside: 移速/攻速/施速 +10%；= cm-pack-14
+self-pack-16	self	16% increased Pack size	怪物移动速度加快 20%／怪物攻击速度加快 20%／怪物施法速度加快 20%／相邻区域的怪物群规模提高 16%	80	前缀	downside: 移速/攻速/施速 +20%；= cm-pack-16
+self-pack-18	self	18% increased Pack size	怪物移动速度加快 30%／怪物攻击速度加快 30%／怪物施法速度加快 30%／相邻区域的怪物群规模提高 18%	83	前缀	downside: 移速/攻速/施速 +30%；= cm-pack-18
+self-pack-16	self	16% increased Pack size	怪物可以发射 2 个额外投射物／相邻区域的怪物群规模提高 16%	68	前缀	downside: 额外投射物 x2
+self-pack-18	self	18% increased Pack size	怪物可以发射 2 个额外投射物／相邻区域的怪物群规模提高 18%	83	前缀	downside: 额外投射物 x2
+self-pack-14	self	14% increased Pack size	怪物效果区域的扩大 (30-40)%／相邻区域的怪物群规模提高 14%	68	后缀	downside: 效果区域 (30-40)%
+self-pack-16	self	16% increased Pack size	怪物效果区域的扩大 (41-45)%／相邻区域的怪物群规模提高 16%	80	后缀	downside: 效果区域 (41-45)%
+self-pack-18	self	18% increased Pack size	怪物效果区域的扩大 (46-60)%／相邻区域的怪物群规模提高 18%	83	后缀	downside: 效果区域 (46-60)%
+self-pack-14	self	14% increased Pack size	怪物暴击率提高 (180-200)%／+(31-40)% 怪物暴击伤害加成／相邻区域的怪物群规模提高 14%	68	后缀	downside: 暴击率 (180-200)% + 暴伤 (31-40)%
+self-pack-16	self	16% increased Pack size	怪物暴击率提高 (201-240)%／+(41-45)% 怪物暴击伤害加成／相邻区域的怪物群规模提高 16%	80	后缀	downside: 暴击率 (201-240)% + 暴伤 (41-45)%
+self-pack-18	self	18% increased Pack size	怪物暴击率提高 (242-350)%／+(41-45)% 怪物暴击伤害加成／相邻区域的怪物群规模提高 18%	83	后缀	downside: 暴击率 (242-350)% + 暴伤 (41-45)%
+self-gold-50	self	50% increased Gold found in this Area	区域内有冰缓地面／该区域内发现的金币数量提高 50%	1	后缀	downside: 冰缓地面(特殊行)；= cm-gold-50
+self-gold-50	self	50% increased Gold found in this Area	区域内有感电地面，使受到的伤害提高 10%／该区域内发现的金币数量提高 50%	1	后缀	downside: 感电地面(特殊行)；= cm-gold-50
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物受到的暴击伤害降低 (20-29)%／相邻区域中找到的物品数量提高 32%	68	后缀	downside: 暴击受伤 (20-29)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物受到的暴击伤害降低 (30-45)%／相邻区域中找到的物品数量提高 40%	80	后缀	downside: 暴击受伤 (30-45)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	对怪物的诅咒总效果总降 50%／相邻区域中找到的物品数量提高 40%	1	前缀	downside: 诅咒总降 50%(特殊行)
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物无法被嘲讽／怪物的行动速度无法被减速至基础以下／怪物的移动速度无法被减速至基础以下／相邻区域中找到的物品数量提高 32%	1	前缀	downside: 无法嘲讽+速度不可低于基础(特殊行)
+self-quant-25	self	25% increased Quantity of Items found in this Area	+% 怪物的混沌抗性／+(5-10)% 怪物的元素抗性／相邻区域中找到的物品数量提高 25%	1	前缀	downside: 混沌抗 +%(poedb 原文如此) + 元素抗 (5-10)%
+self-quant-32	self	32% increased Quantity of Items found in this Area	+(10-19)% 怪物的混沌抗性／+(11-19)% 怪物的元素抗性／相邻区域中找到的物品数量提高 32%	68	前缀	downside: 混沌抗 (10-19)% + 元素抗 (11-19)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	+(20-25)% 怪物的混沌抗性／+(20-25)% 怪物的元素抗性／相邻区域中找到的物品数量提高 40%	80	前缀	downside: 混沌抗 (20-25)% + 元素抗 (20-25)%
+self-quant-55	self	55% increased Quantity of Items found in this Area	+(26-40)% 怪物的混沌抗性／+(26-40)% 怪物的元素抗性／相邻区域中找到的物品数量提高 55%	83	前缀	downside: 混沌抗 (26-40)% + 元素抗 (26-40)%
+cm-quant-28	self	28% increased Quantity of Items found in this Area	怪物有 40% 的几率避免中毒、穿刺、流血／相邻区域中找到的物品数量提高 28%	1	前缀	downside: 免疫中毒/穿刺/流血；= cm-quant-28（app 词池含 28）
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	被怪物击中时中毒／相邻区域中找到的亡者硫磺提高 30%	68	后缀	downside: 击中中毒
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物的技能附加 2 次连锁弹射／相邻区域中找到的亡者硫磺提高 30%	1	前缀	downside: 技能连锁 x2
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物免疫诅咒／相邻区域中找到的亡者硫磺提高 30%	68	前缀	downside: 免疫诅咒
+self-gold-70	self	70% increased Gold found in this Area	怪物在击中时获得狂怒球／该区域内发现的金币数量提高 70%	1	后缀	downside: 击中获狂怒球；= cm-gold-70
+self-gold-50	self	50% increased Gold found in this Area	怪物有 50% 的几率在击中时获得狂怒球／该区域内发现的金币数量提高 50%	68	后缀	downside: 50% 几率获狂怒球；= cm-gold-50
+self-gold-70	self	70% increased Gold found in this Area	怪物在击中时获得耐力球／该区域内发现的金币数量提高 70%	1	后缀	downside: 击中获耐力球；= cm-gold-70
+self-gold-50	self	50% increased Gold found in this Area	怪物有 50% 的几率在击中时获得耐力球／该区域内发现的金币数量提高 50%	68	后缀	downside: 50% 几率获耐力球；= cm-gold-50
+self-gold-70	self	70% increased Gold found in this Area	怪物在击中时获得暴击球／该区域内发现的金币数量提高 70%	1	后缀	downside: 击中获暴击球；= cm-gold-70
+self-gold-50	self	50% increased Gold found in this Area	怪物有 50% 的几率在击中时获得暴击球／该区域内发现的金币数量提高 50%	68	后缀	downside: 50% 几率获暴击球；= cm-gold-50
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物有 +40% 的几率压制法术伤害／相邻区域中找到的物品数量提高 32%	68	前缀	downside: 40% 几率压制法术伤害
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物有 +60% 的几率压制法术伤害／相邻区域中找到的物品数量提高 40%	80	前缀	downside: 60% 几率压制法术伤害
+self-quant-55	self	55% increased Quantity of Items found in this Area	怪物有 +80% 的几率压制法术伤害／相邻区域中找到的物品数量提高 55%	83	前缀	downside: 80% 几率压制法术伤害
+self-quant-25	self	25% increased Quantity of Items found in this Area	怪物将生命上限的 (10-19)% 转化为额外能量护盾上限／相邻区域中找到的物品数量提高 25%	1	前缀	downside: 生命转护盾 (10-19)%
+self-quant-32	self	32% increased Quantity of Items found in this Area	怪物将生命上限的 (20-34)% 转化为额外能量护盾上限／相邻区域中找到的物品数量提高 32%	68	前缀	downside: 生命转护盾 (20-34)%
+self-quant-40	self	40% increased Quantity of Items found in this Area	怪物将生命上限的 (35-50)% 转化为额外能量护盾上限／相邻区域中找到的物品数量提高 40%	80	前缀	downside: 生命转护盾 (35-50)%
+self-quant-55	self	55% increased Quantity of Items found in this Area	怪物将生命上限的 (51-80)% 转化为额外能量护盾上限／相邻区域中找到的物品数量提高 55%	83	前缀	downside: 生命转护盾 (51-80)%
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物击中时致盲／相邻区域中找到的亡者硫磺提高 30%	1	后缀	downside: 击中致盲
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物的攻击击中施加瘫痪／相邻区域中找到的亡者硫磺提高 30%	1	后缀	downside: 攻击瘫痪
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物的法术击中施加缓速／相邻区域中找到的亡者硫磺提高 30%	1	后缀	downside: 法术缓速
+self-pack-16	self	16% increased Pack size	召唤生物的伤害穿透 (8-12)% 元素抗性／相邻区域的怪物群规模提高 16%	68	后缀	downside: 召唤物穿透 (8-12)%
+self-pack-18	self	18% increased Pack size	召唤生物的伤害穿透 (13-15)% 元素抗性／相邻区域的怪物群规模提高 18%	83	后缀	downside: 召唤物穿透 (13-15)%
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物击中时有几率偷取暴击球，狂暴球，耐力球／相邻区域中找到的亡者硫磺提高 30%	68	后缀	downside: 偷取三球
+self-pack-14	self	14% increased Pack size	玩家的所有抗性上限为 (-9—-6)%／相邻区域的怪物群规模提高 14%	68	后缀	downside: 抗性上限 (-9—-6)%
+self-pack-16	self	16% increased Pack size	玩家的所有抗性上限为 (-12—-10)%／相邻区域的怪物群规模提高 16%	80	后缀	downside: 抗性上限 (-12—-10)%
+self-pack-18	self	18% increased Pack size	玩家的所有抗性上限为 (-14—-12)%／相邻区域的怪物群规模提高 18%	83	后缀	downside: 抗性上限 (-14—-12)%
+self-pack-16	self	16% increased Pack size	怪物击中时施加 1 缓速藤蔓／相邻区域的怪物群规模提高 16%	68	后缀	downside: 缓速藤蔓 x1
+self-pack-18	self	18% increased Pack size	怪物击中时施加 3 缓速藤蔓／相邻区域的怪物群规模提高 18%	83	后缀	downside: 缓速藤蔓 x3
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物获得相当于其物理伤害 (10-14)% 的额外混沌伤害／怪物击中时造成 2 秒的死亡凋零／相邻区域中找到的亡者硫磺提高 30%	68	前缀	downside: 物转混沌 (10-14)% + 死亡凋零
+self-sulph-30	self	30% increased Dead Man's Sulphur found in this Area	怪物获得相当于其物理伤害 (15-20)% 的额外混沌伤害／怪物击中时造成 2 秒的死亡凋零／相邻区域中找到的亡者硫磺提高 30%	80	前缀	downside: 物转混沌 (15-20)% + 死亡凋零
+self-sulph-45	self	45% increased Dead Man's Sulphur found in this Area	怪物获得相当于其物理伤害 (21-29)% 的额外混沌伤害／怪物击中时造成 2 秒的死亡凋零／相邻区域中找到的亡者硫磺提高 45%	83	前缀	downside: 物转混沌 (21-29)% + 死亡凋零
+uncharted-zh	uncharted-implicit	Voyage Modifier will be revealed once Charted	航行词缀将在完成测绘后揭示	1	传奇	未测绘提示行（英文 app 里 uncharted regex 用；此中文文案可用于 CN 方言的 uncharted 正则）
+adj-ess-1	adjacent	Adjacent Areas contain 1-2 additional Imprisoned Monsters	相邻区域包含 (1-2) 个额外被囚禁的怪物	1		
+adj-ess-2	adjacent	Adjacent Areas contain 2-4 additional Imprisoned Monsters	相邻区域包含 (2-4) 个额外被囚禁的怪物	46		
+adj-ess-3	adjacent	Adjacent Areas contain 5 additional Imprisoned Monsters	相邻区域包含 5 个额外被囚禁的怪物	68		
+adj-box-1	adjacent	Adjacent Areas contain an additional Strongbox	相邻区域包含 1 个额外保险箱	1		
+adj-box-2	adjacent	Adjacent Areas contain 2-4 additional Strongboxes	相邻区域包含 (2-4) 个额外保险箱	46		
+adj-box-3	adjacent	Adjacent Areas contain 5 additional Strongboxes	相邻区域包含 5 个额外保险箱	68		
+adj-octo-1	adjacent	Adjacent Areas contain 8-10 additional packs of Octopi	相邻区域包含 (8-10) 个额外的章鱼群	1		
+adj-octo-2	adjacent	Adjacent Areas contain 11-14 additional packs of Octopi	相邻区域包含 (11-14) 个额外的章鱼群	68		
+adj-crab-1	adjacent	Adjacent Areas contain 8-10 additional packs of Crabs	相邻区域包含 (8-10) 个额外的螃蟹群	1		
+adj-crab-2	adjacent	Adjacent Areas contain 11-14 additional packs of Crabs	相邻区域包含 (11-14) 个额外的螃蟹群	68		
+adj-magic-1	adjacent	30% increased Magic Monsters	相邻区域的魔法怪物数量提高 30%	46		
+adj-magic-2	adjacent	60% increased Magic Monsters	相邻区域的魔法怪物数量提高 60%	68		
+adj-rare-1	adjacent	30% increased number of Rare Monsters	相邻区域的稀有怪物数量提高 30%	46		
+adj-rare-2	adjacent	60% increased number of Rare Monsters	相邻区域的稀有怪物数量提高 60%	68		
+adj-msg-1	adjacent	Adjacent Areas contain an additional Message in a Bottle	相邻区域包含 1 个额外瓶中信	68		
+adj-msg-2	adjacent	Adjacent Areas contain 2 additional Messages in Bottles	相邻区域包含 2 个额外瓶中信	68		
+adj-fish	adjacent	Adjacent Areas contain highly prized and exotic Fish	相邻区域包含珍贵而奇特的鱼	68		
+adj-wisps-1	adjacent	Monsters have a chance to be Empowered by 2000 Wildwood Wisps	怪物有几率被 2000 个荒林鬼灵强化	68		
+adj-wisps-2	adjacent	Monsters have a chance to be Empowered by 4000 Wildwood Wisps	怪物有几率被 4000 个荒林鬼灵强化	68		
+adj-atziri	adjacent	Atziri's Influence	阿兹里之息	68		
+adj-gold-1	adjacent	40% of Equipment dropped by Monsters in Area is converted to Gold	相邻区域怪物掉落装备的 40% 转化为金币	1		
+adj-gold-2	adjacent	80% of Equipment dropped by Monsters in Area is converted to Gold	相邻区域怪物掉落装备的 80% 转化为金币	46		
+adj-spirit-1	adjacent	Adjacent Areas contain an additional cage of Tormented Spirits	相邻区域包含 1 个额外罪魂牢笼	46		
+adj-spirit-2	adjacent	Adjacent Areas contain 2 additional cages of Tormented Spirits	相邻区域包含 2 个额外罪魂牢笼	68		
+adj-divbox-1	adjacent	Adjacent Areas contain 2 additional Diviner's Strongboxes	相邻区域包含 2 个额外神圣的秘宝	46		poedb 词条 "Diviner's Strongbox" 在此渲染为 神圣的秘宝
+adj-divbox-2	adjacent	Adjacent Areas contain 3 additional Diviner's Strongboxes	相邻区域包含 3 个额外神圣的秘宝	68		poedb 词条 "Diviner's Strongbox" 在此渲染为 神圣的秘宝
+adj-arcbox-1	adjacent	Adjacent Areas contain 2 additional Arcanist's Strongboxes	相邻区域包含 2 个额外奥术师的保险箱	1		
+adj-arcbox-2	adjacent	Adjacent Areas contain 3 additional Arcanist's Strongboxes	相邻区域包含 3 个额外奥术师的保险箱	68		
+adj-opbox-1	adjacent	Adjacent Areas contain 2 additional Operative's Strongboxes	相邻区域包含 2 个额外侦探的保险箱	68		
+adj-opbox-2	adjacent	Adjacent Areas contain 3 additional Operative's Strongboxes	相邻区域包含 3 个额外侦探的保险箱	78		
+adj-barrel-1	adjacent	Adjacent Areas contain 12-15 additional Clusters of Barrels	相邻区域包含 (12-15) 个额外木桶丛	1		
+adj-barrel-2	adjacent	Adjacent Areas contain 16-20 additional Clusters of Mysterious Barrels	相邻区域包含 (16-20) 个额外木桶丛	68		
+adj-star-1	adjacent	Adjacent Areas contains 4-5 additional Giant Starfish	相邻区域包含 (4-5) 个额外巨型海星	46		
+adj-star-2	adjacent	Adjacent Areas contains 6-7 additional Giant Starfish	相邻区域包含 (6-7) 个额外巨型海星	68		
+adj-fracture	adjacent	Items dropped in adjacent Areas have 2% chance to be Fractured	相邻区域掉落的物品有 2% 的几率分裂	68		
+adj-lantern	adjacent	Adjacent Areas contain 4 additional Golden Lanterns	相邻区域包含 4 个额外黄金灯笼	1		
+adj-pantheon	adjacent	Rare Monsters in adjacent Areas will have a Pantheon Modifier	相邻区域的稀有怪物将带有众神词缀	68		app zh 意译为 万神殿词缀；poedb/客户端为 众神词缀
+adj-uring-1	adjacent	Rings dropped in adjacent Areas have 10% chance to instead drop as a Unique Ring	相邻区域掉落的戒指有 10% 的几率改为掉落为传奇戒指	1		CN 客户端 "unique" 译为 传奇
+adj-uring-2	adjacent	Rings dropped in adjacent Areas have 20% chance to instead drop as a Unique Ring	相邻区域掉落的戒指有 20% 的几率改为掉落为传奇戒指	47		
+adj-uamu-1	adjacent	Amulets dropped in adjacent Areas have 10% chance to instead drop as a Unique Amulet	相邻区域掉落的护身符有 10% 的几率改为掉落为传奇护身符	1		
+adj-uamu-2	adjacent	Amulets dropped in adjacent Areas have 20% chance to instead drop as a Unique Amulet	相邻区域掉落的护身符有 20% 的几率改为掉落为传奇护身符	47		
+adj-ubelt-1	adjacent	Belts dropped in adjacent Areas have 10% chance to instead drop as a Unique Belt	相邻区域掉落的腰带有 10% 的几率改为掉落为传奇腰带	1		
+adj-ubelt-2	adjacent	Belts dropped in adjacent Areas have 20% chance to instead drop as a Unique Belt	相邻区域掉落的腰带有 20% 的几率改为掉落为传奇腰带	47		
+voy-soul	global	Players in Area have Soul Eater	所有航行区域的玩家拥有噬魂者	1		
+voy-pack-1	global	5% increased Pack size	所有航行区域的怪物群规模提高 5%	1		
+voy-pack-2	global	7% increased Pack size	所有航行区域的怪物群规模提高 7%	68		
+voy-quant-1	global	8% increased Quantity of Items found in this Area	所有航行区域中找到的物品数量提高 8%	1		
+voy-quant-2	global	10% increased Quantity of Items found in this Area	所有航行区域中找到的物品数量提高 10%	68		
+voy-rarity-1	global	7% increased Rarity of Items found in this Area	所有航行区域中找到的物品稀有度提高 7%	1		
+voy-rarity-2	global	9% increased Rarity of Items found in this Area	所有航行区域中找到的物品稀有度提高 9%	68		
+voy-jelly	global	All Voyage Areas contain Friendly Jellyfish	所有航行区域包含友善水母	1		
+voy-sulph-1	global	15% increased Dead Man's Sulphur found in this Area	所有航行区域中找到的亡者硫磺提高 15%	1		
+voy-sulph-2	global	20% increased Dead Man's Sulphur found in this Area	所有航行区域中找到的亡者硫磺提高 20%	46		
+voy-sulph-3	global	25% increased Dead Man's Sulphur found in this Area	所有航行区域中找到的亡者硫磺提高 25%	68		
+voy-rare	global	25% increased number of Rare Monsters	所有航行区域的稀有怪物数量提高 25%	46		
+voy-magic	global	25% increased Magic Monsters	所有航行区域的魔法怪物数量提高 25%	46		
+voy-noequip	global	Monsters in all Voyage Areas cannot drop Equipment, Flasks or Tinctures	所有航行区域中的怪物无法掉落装备、药剂或酊剂	68		
+voy-minmagic	global	Monsters in Area are at least Magic	所有航行区域的怪物至少为魔法	68		
+voy-possess	global	100% chance for Rare Monsters in Area to be Possessed	所有航行区域的稀有怪物有 100% 的几率被附身	46		
+voy-essence	global	Rare monsters that are natural inhabitants are imprisoned by Essences	所有航行区域中作为原生住民的稀有怪物被精华囚禁	68		
+voy-fracture	global	50% chance for Rare Monsters to Fracture on death	所有航行区域的稀有怪物死亡时有 50% 的几率分裂	68		
+voy-flask	global	Flasks found in all Voyage Areas have 100% chance to have 20% Quality	所有航行区域中找到的药剂有 100% 的几率带有 20% 品质	68		

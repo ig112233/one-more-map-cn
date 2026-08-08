@@ -918,6 +918,8 @@ PreferredOcrLanguage() {
         processName := WinGetProcessName(PoeWinTitle)
         if RegExMatch(processName, "i)_KG\.exe$")
             return "ko-KR"
+        if RegExMatch(processName, "i)_CN\.exe$")
+            return "zh-CN"
     }
     return ""
 }

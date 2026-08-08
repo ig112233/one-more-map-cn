@@ -107,8 +107,60 @@ const KOREAN_DIALECT: ClipboardDialect = {
   rewardRider: /^이 지역에서 발견하는 .*\d+%\s*증가$/i,
 }
 
-const DIALECTS = [ENGLISH_DIALECT, KOREAN_DIALECT]
-const ITEM_START_RE = /(?=^[ \t]*(?:Item Class|아이템 종류)\s*[:：])/gim
+// ---------------------------------------------------------------------------
+// Simplified-Chinese dialect.
+//
+// Structural labels verified against real CN-client chart copies (2026-08,
+// CN player corpus): the item header is 物品类别, Rarity renders as 稀 有 度
+// (letter-spaced!), the header stat for Pack size is 怪物群大小, the implicit
+// marker is { 基底属性 }, shapes are 角落/交叉/节点/…, and reward riders read
+// 此区域中找到的…提高 X%. Chart Shape names were confirmed from the same
+// corpus; any name not seen yet keeps a translated candidate so future charts
+// still parse. Modifier lines (the { 基底属性 } body) are matched via aliases
+// on the mod defs; unaliased ones keep their verbatim text.
+// ---------------------------------------------------------------------------
+const CHINESE_DIALECT: ClipboardDialect = {
+  itemClass: /^[ \t]*物品(?:类别|种类)\s*[:：]/im,
+  chartClass: /^[ \t]*物品(?:类别|种类)\s*[:：]\s*海图[ \t]*$/im,
+  rarity: /^稀\s*有\s*度\s*[:：]/i,
+  areaLevel: /^区域等级\s*[:：]\s*(\d+)\s*$/im,
+  shape: /^海图形状\s*[:：]\s*(.+?)\s*$/im,
+  shapeLabel: '海图形状',
+  implicitMarker: /^\{\s*(?:基底属性|固定词缀|固定属性|固有词缀)\s*\}$/i,
+  uncharted: /航行词缀将在完成测绘后揭示|完成测绘(?:后|之)?会揭(?:示|露)/i,
+  headerStats: [
+    { re: /物品数量\s*[:：]\s*\+?(\d+)%/i, stat: 'quantity' },
+    { re: /物品稀有度\s*[:：]\s*\+?(\d+)%/i, stat: 'rarity' },
+    { re: /金币(?:发现量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'gold' },
+    { re: /亡者硫磺\s*[:：]\s*\+?(\d+)%/i, stat: 'sulphur' },
+    { re: /怪物群大小\s*[:：]\s*\+?(\d+)%/i, stat: 'packsize' },
+    { re: /圣甲虫(?:发现量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'scarabs' },
+    { re: /通货(?:发现量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'currency' },
+  ],
+  // 角落/交叉/节点 confirmed from the CN corpus; the rest are candidates.
+  shapes: {
+    角落: CORNER,
+    拐角: CORNER,
+    转角: CORNER,
+    交叉: CROSSING,
+    十字: CROSSING,
+    十字路口: CROSSING,
+    节点: JUNCTION,
+    三岔: JUNCTION,
+    交叉点: JUNCTION,
+    直线: STRAIGHT,
+    末端: END,
+    端点: END,
+    尽头: END,
+  },
+  structural:
+    /^(?:物品(?:类别|种类)\s*[:：]|稀\s*有\s*度\s*[:：]|区域等级\s*[:：]|物品等级\s*[:：]|需求\s*[:：]?|等级\s*[:：]\s*\d+|海图形状\s*[:：]|将此物品带给|（)/i,
+  rewardRider:
+    /^(?:此区域|该区域|相邻区域)(?:中|内|里)?(?:找到|发现|掉落)的?.{0,20}?(?:提高|增加|总增|降低|减少)\s*\d+%/i,
+}
+
+const DIALECTS = [ENGLISH_DIALECT, KOREAN_DIALECT, CHINESE_DIALECT]
+const ITEM_START_RE = /(?=^[ \t]*(?:Item Class|아이템 종류|物品(?:类别|种类))\s*[:：])/gim
 const SEPARATOR_RE = /^-{3,}$/
 
 function normalizeClipboardText(text: string): string {

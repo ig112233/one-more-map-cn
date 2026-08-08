@@ -17,6 +17,7 @@ require.extensions['.ts'] = (module, filename) => {
 
 const { parseBorderOcrPayload } = require('../src/logic/borderOcr.ts')
 const { BORDER_MODS } = require('../src/data/mods.ts')
+const { CHINESE_BORDER_MOD_EVIDENCE } = require('../src/data/borderMods.zh.ts')
 
 const CURRENT_BORDER_TOOLTIPS = [
   ['b-pack-1', '16% increased Pack Size in adjacent Areas'],
@@ -161,6 +162,28 @@ for (const [expectedId, tooltip] of CURRENT_BORDER_TOOLTIPS) {
     `${expectedId} was parsed as ${result.matches[0]?.id ?? 'MISS'}: ${tooltip}`,
   )
 }
+
+// Simplified-Chinese client: every translated border candidate must resolve.
+// These are unverified translations, so exact resolution also guards the
+// keyword+similarity matcher against accidentally tightening its floor.
+for (const [expectedId, evidence] of Object.entries(CHINESE_BORDER_MOD_EVIDENCE)) {
+  const result = parseBorderOcrPayload(block(evidence.text))
+  assert.equal(
+    result.matches[0]?.id,
+    expectedId,
+    `zh ${expectedId} was parsed as ${result.matches[0]?.id ?? 'MISS'}: ${evidence.text}`,
+  )
+}
+
+const unspacedPackSize = parseBorderOcrPayload(block('相邻区域怪物群规模提高16%'))
+assert.equal(unspacedPackSize.matches[0]?.id, 'b-pack-1')
+
+const wordOrderLanterns = parseBorderOcrPayload(block('相邻区域额外包含4个黄金灯笼'))
+assert.equal(wordOrderLanterns.matches[0]?.id, 'b-goldlantern')
+
+const zhUnknown = parseBorderOcrPayload(block('相邻区域的怪物会掉落完全不同的特殊奖励'))
+assert.equal(zhUnknown.matches.length, 0)
+assert.equal(zhUnknown.misses.length, 1)
 
 let legacyAliasCount = 0
 for (const mod of BORDER_MODS) {

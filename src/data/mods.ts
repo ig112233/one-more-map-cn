@@ -6,6 +6,11 @@
 // NOTE: `text` stays English (it feeds clipboard/OCR matching and the
 // in-game search strings). `zh` is the Simplified-Chinese display text used
 // everywhere in the UI; `short` labels are localised (display only).
+//
+// Chinese `aliases` provenance: entries with a 8(8-10) inline roll or a plain
+// 提高 sentence are verbatim from a real CN-client chart corpus (2026-08);
+// tier siblings derived from a verified template are marked by the same
+// confirmed-numeric-variant rule the Korean table uses.
 // ============================================================================
 
 import type { BorderModDef, VoyageModDef } from '../types'
@@ -55,22 +60,22 @@ const adjacentImplicits: VoyageModDef[] = [
     short: '+8-10 章鱼',
     text: 'Adjacent Areas contain 8-10 additional packs of Octopi',
     zh: '相邻区域额外包含 8-10 群章鱼',
-    aliases: ['인접 지역들에 문어 무리 8(8-10)개 추가 등장'],
+    aliases: ['인접 지역들에 문어 무리 8(8-10)개 추가 등장', '相邻区域包含 8(8-10) 个额外的章鱼群'],
     scope: 'adjacent',
     effects: [{ stat: 'packsize', percent: 25 }],
   },
-  { id: 'adj-octo-2', short: '+11-14 章鱼', text: 'Adjacent Areas contain 11-14 additional packs of Octopi', zh: '相邻区域额外包含 11-14 群章鱼', aliases: ['인접 지역들에 문어 무리 11(11-14)개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'packsize', percent: 35 }] },
+  { id: 'adj-octo-2', short: '+11-14 章鱼', text: 'Adjacent Areas contain 11-14 additional packs of Octopi', zh: '相邻区域额外包含 11-14 群章鱼', aliases: ['인접 지역들에 문어 무리 11(11-14)개 추가 등장', '相邻区域包含 11(11-14) 个额外的章鱼群'], scope: 'adjacent', effects: [{ stat: 'packsize', percent: 35 }] },
   { id: 'adj-crab-1', short: '+8-10 螃蟹', text: 'Adjacent Areas contain 8-10 additional packs of Crabs', zh: '相邻区域额外包含 8-10 群螃蟹', aliases: ['인접 지역에 게 무리 8(8-10)개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'packsize', percent: 25 }] },
   { id: 'adj-crab-2', short: '+11-14 螃蟹', text: 'Adjacent Areas contain 11-14 additional packs of Crabs', zh: '相邻区域额外包含 11-14 群螃蟹', aliases: ['인접 지역에 게 무리 11(11-14)개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'packsize', percent: 35 }] },
-  { id: 'adj-magic-1', text: '30% increased Magic Monsters', zh: '魔法怪物数量增加 30%', aliases: ['인접 지역들 내 마법 몬스터 수 30% 증가'], scope: 'adjacent', effects: [{ stat: 'magicmonsters', percent: 30 }] },
-  { id: 'adj-magic-2', text: '60% increased Magic Monsters', zh: '魔法怪物数量增加 60%', aliases: ['인접 지역들 내 마법 몬스터 수 60% 증가'], scope: 'adjacent', effects: [{ stat: 'magicmonsters', percent: 60 }] },
+  { id: 'adj-magic-1', text: '30% increased Magic Monsters', zh: '魔法怪物数量增加 30%', aliases: ['인접 지역들 내 마법 몬스터 수 30% 증가', '相邻区域的魔法怪物数量提高 30%'], scope: 'adjacent', effects: [{ stat: 'magicmonsters', percent: 30 }] },
+  { id: 'adj-magic-2', text: '60% increased Magic Monsters', zh: '魔法怪物数量增加 60%', aliases: ['인접 지역들 내 마법 몬스터 수 60% 증가', '相邻区域的魔法怪物数量提高 60%'], scope: 'adjacent', effects: [{ stat: 'magicmonsters', percent: 60 }] },
   { id: 'adj-rare-1', text: '30% increased number of Rare Monsters', zh: '稀有怪物数量增加 30%', aliases: ['인접 지역들 내 희귀 몬스터 수 30% 증가'], scope: 'adjacent', effects: [{ stat: 'rares', percent: 30 }] },
   { id: 'adj-rare-2', text: '60% increased number of Rare Monsters', zh: '稀有怪物数量增加 60%', aliases: ['인접 지역들 내 희귀 몬스터 수 60% 증가'], scope: 'adjacent', effects: [{ stat: 'rares', percent: 60 }] },
   { id: 'adj-msg-1', short: '+1 信息', text: 'Adjacent Areas contain an additional Message in a Bottle', zh: '相邻区域额外包含 1 个瓶中信息', scope: 'adjacent', effects: [{ stat: 'treasure', percent: 12 }] },
   { id: 'adj-msg-2', short: '+2 信息', text: 'Adjacent Areas contain 2 additional Messages in Bottles', zh: '相邻区域额外包含 2 个瓶中信息', scope: 'adjacent', effects: [{ stat: 'treasure', percent: 22 }] },
   { id: 'adj-fish', short: '珍稀鱼类', text: 'Adjacent Areas contain highly prized and exotic Fish', zh: '相邻区域包含备受珍视的珍稀鱼类', scope: 'adjacent', effects: [{ stat: 'treasure', percent: 20 }] },
-  { id: 'adj-wisps-1', short: '2000 精魄', text: 'Monsters have a chance to be Empowered by 2000 Wildwood Wisps', zh: '怪物有一定几率被 2000 个荒野精魄强化', aliases: ['몬스터가 일정 확률로 야생림 도깨비불 2000마리로 강화'], scope: 'adjacent', effects: [{ stat: 'wisps', percent: 30 }] },
-  { id: 'adj-wisps-2', short: '4000 精魄', text: 'Monsters have a chance to be Empowered by 4000 Wildwood Wisps', zh: '怪物有一定几率被 4000 个荒野精魄强化', aliases: ['몬스터가 일정 확률로 야생림 도깨비불 4000마리로 강화'], scope: 'adjacent', effects: [{ stat: 'wisps', percent: 55 }] },
+  { id: 'adj-wisps-1', short: '2000 精魄', text: 'Monsters have a chance to be Empowered by 2000 Wildwood Wisps', zh: '怪物有一定几率被 2000 个荒野精魄强化', aliases: ['몬스터가 일정 확률로 야생림 도깨비불 2000마리로 강화', '怪物有几率被 2000 个荒林鬼灵强化'], scope: 'adjacent', effects: [{ stat: 'wisps', percent: 30 }] },
+  { id: 'adj-wisps-2', short: '4000 精魄', text: 'Monsters have a chance to be Empowered by 4000 Wildwood Wisps', zh: '怪物有一定几率被 4000 个荒野精魄强化', aliases: ['몬스터가 일정 확률로 야생림 도깨비불 4000마리로 강화', '怪物有几率被 4000 个荒林鬼灵强化'], scope: 'adjacent', effects: [{ stat: 'wisps', percent: 55 }] },
   { id: 'adj-atziri', short: '阿兹里的影响', text: "Atziri's Influence", zh: "阿兹里的影响", aliases: ['앗지리의 영향력'], scope: 'adjacent', effects: [{ stat: 'treasure', percent: 40 }] },
   {
     id: 'adj-gold-1',
@@ -81,7 +86,7 @@ const adjacentImplicits: VoyageModDef[] = [
     effects: [{ stat: 'gold', percent: 40 }],
   },
   { id: 'adj-gold-2', text: '80% of Equipment dropped by Monsters in Area is converted to Gold', zh: '区域内怪物掉落的装备有 80% 转化为金币', aliases: ['인접 지역 내 몬스터가 떨어뜨리는 장비의 80%가 골드로 전환'], scope: 'adjacent', effects: [{ stat: 'gold', percent: 80 }] },
-  { id: 'adj-spirit-1', short: '+1 幽魂牢笼', text: 'Adjacent Areas contain an additional cage of Tormented Spirits', zh: '相邻区域额外包含 1 个折磨之灵牢笼', aliases: ['인접 지역들에 고통받는 혼백의 창살 1개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'spirits', percent: 20 }] },
+  { id: 'adj-spirit-1', short: '+1 幽魂牢笼', text: 'Adjacent Areas contain an additional cage of Tormented Spirits', zh: '相邻区域额外包含 1 个折磨之灵牢笼', aliases: ['인접 지역들에 고통받는 혼백의 창살 1개 추가 등장', '相邻区域包含一个额外罪魂牢笼'], scope: 'adjacent', effects: [{ stat: 'spirits', percent: 20 }] },
   { id: 'adj-spirit-2', short: '+2 幽魂牢笼', text: 'Adjacent Areas contain 2 additional cages of Tormented Spirits', zh: '相邻区域额外包含 2 个折磨之灵牢笼', aliases: ['인접 지역들에 고통받는 혼백의 창살 2개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'spirits', percent: 38 }] },
   { id: 'adj-divbox-1', short: '+2 预言家保险箱', text: "Adjacent Areas contain 2 additional Diviner's Strongboxes", zh: "相邻区域额外包含 2 个预言家保险箱", aliases: ['인접 지역들에 예언자의 금고 2개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'divcards', percent: 45 }] },
   { id: 'adj-divbox-2', short: '+3 预言家保险箱', text: "Adjacent Areas contain 3 additional Diviner's Strongboxes", zh: "相邻区域额外包含 3 个预言家保险箱", aliases: ['인접 지역들에 예언자의 금고 3개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'divcards', percent: 65 }] },
@@ -94,7 +99,7 @@ const adjacentImplicits: VoyageModDef[] = [
     short: '+12-15 木桶',
     text: 'Adjacent Areas contain 12-15 additional Clusters of Barrels',
     zh: '相邻区域额外包含 12-15 组木桶',
-    aliases: ['인접 지역들에 통 무더기 14(12-15)개 추가 등장'],
+    aliases: ['인접 지역들에 통 무더기 14(12-15)개 추가 등장', '相邻区域包含 15(12-15) 个额外木桶丛'],
     scope: 'adjacent',
     effects: [{ stat: 'treasure', percent: 15 }],
   },
@@ -103,7 +108,7 @@ const adjacentImplicits: VoyageModDef[] = [
     short: '+16-20 木桶',
     text: 'Adjacent Areas contain 16-20 additional Clusters of Mysterious Barrels',
     zh: '相邻区域额外包含 16-20 组神秘木桶',
-    aliases: ['인접 지역들에 통 무더기 17(16-20)개 추가 등장'],
+    aliases: ['인접 지역들에 통 무더기 17(16-20)개 추가 등장', '相邻区域包含 16(16-20) 个额外木桶丛'],
     scope: 'adjacent',
     effects: [{ stat: 'treasure', percent: 22 }],
   },
@@ -117,7 +122,7 @@ const adjacentImplicits: VoyageModDef[] = [
     effects: [{ stat: 'packsize', percent: 15 }],
   },
   { id: 'adj-star-2', short: '+6-7 海星', text: 'Adjacent Areas contains 6-7 additional Giant Starfish', zh: '相邻区域额外包含 6-7 只巨型海星', aliases: ['인접 지역들에 에 거대 불가사리 7(6-7)마리 추가 등장'], scope: 'adjacent', effects: [{ stat: 'packsize', percent: 20 }] },
-  { id: 'adj-fracture', short: '2% 碎裂物品', text: 'Items dropped in adjacent Areas have 2% chance to be Fractured', zh: '相邻区域掉落的物品有 2% 几率碎裂', aliases: ['인접 지역들에서 떨어지는 아이템이 2% 확률로 분열된 등급'], scope: 'adjacent', effects: [] },
+  { id: 'adj-fracture', short: '2% 碎裂物品', text: 'Items dropped in adjacent Areas have 2% chance to be Fractured', zh: '相邻区域掉落的物品有 2% 几率碎裂', aliases: ['인접 지역들에서 떨어지는 아이템이 2% 확률로 분열된 등급', '相邻区域掉落的物品有 2% 的几率分裂'], scope: 'adjacent', effects: [] },
   { id: 'adj-lantern', short: '+4 黄金灯笼', text: 'Adjacent Areas contain 4 additional Golden Lanterns', zh: '相邻区域额外包含 4 个黄金灯笼', aliases: ['인접 지역들에 황금 등불 4개 추가 등장'], scope: 'adjacent', effects: [{ stat: 'treasure', percent: 20 }] },
   { id: 'adj-pantheon', short: '万神殿稀有怪', text: 'Rare Monsters in adjacent Areas will have a Pantheon Modifier', zh: '相邻区域的稀有怪物将拥有 1 个万神殿词缀', aliases: ['인접 지역들 내 희귀 몬스터가 판테온 속성 1개 보유'], scope: 'adjacent', effects: [{ stat: 'rares', percent: 25 }] },
   { id: 'adj-uring-1', short: '10% 暗金戒指', text: 'Rings dropped in adjacent Areas have 10% chance to instead drop as a Unique Ring', zh: '相邻区域掉落的戒指有 10% 几率改为掉落暗金戒指', aliases: ['인접 지역들에서 떨어지는 반지가 10% 확률로 고유 반지로 떨어짐'], scope: 'adjacent', effects: [{ stat: 'uniques', percent: 20 }] },
@@ -143,7 +148,7 @@ const voyageImplicits: VoyageModDef[] = [
   { id: 'voy-sulph-1', text: "15% increased Dead Man's Sulphur found in this Area", zh: '此区域发现的亡者硫磺增加 15%', aliases: ['모든 항해 지역에서 발견하는 망자의 유황 15% 증가'], scope: 'global', effects: [{ stat: 'sulphur', percent: 15 }] },
   { id: 'voy-sulph-2', text: "20% increased Dead Man's Sulphur found in this Area", zh: '此区域发现的亡者硫磺增加 20%', aliases: ['모든 항해 지역에서 발견하는 망자의 유황 20% 증가'], scope: 'global', effects: [{ stat: 'sulphur', percent: 20 }] },
   { id: 'voy-sulph-3', text: "25% increased Dead Man's Sulphur found in this Area", zh: '此区域发现的亡者硫磺增加 25%', aliases: ['모든 항해 지역에서 발견하는 망자의 유황 25% 증가'], scope: 'global', effects: [{ stat: 'sulphur', percent: 25 }] },
-  { id: 'voy-rare', text: '25% increased number of Rare Monsters', zh: '稀有怪物数量增加 25%', aliases: ['모든 항해 지역 내 희귀 몬스터 수 25% 증가'], scope: 'global', effects: [{ stat: 'rares', percent: 25 }] },
+  { id: 'voy-rare', text: '25% increased number of Rare Monsters', zh: '稀有怪物数量增加 25%', aliases: ['모든 항해 지역 내 희귀 몬스터 수 25% 증가', '所有航行区域的稀有怪物数量提高 25%'], scope: 'global', effects: [{ stat: 'rares', percent: 25 }] },
   { id: 'voy-magic', text: '25% increased Magic Monsters', zh: '魔法怪物数量增加 25%', aliases: ['모든 항해 지역 내 마법 몬스터 수 25% 증가'], scope: 'global', effects: [{ stat: 'magicmonsters', percent: 25 }] },
   { id: 'voy-noequip', short: '不掉落装备', text: 'Monsters in all Voyage Areas cannot drop Equipment, Flasks or Tinctures', zh: '所有航行区域的怪物不会掉落装备、药剂或酊剂', scope: 'global', effects: [] },
   { id: 'voy-minmagic', short: '至少为魔法', text: 'Monsters in Area are at least Magic', zh: '区域内的怪物至少为魔法等级', aliases: ['모든 항해 지역 내 몬스터가 마법 이상으로 등장'], scope: 'global', effects: [{ stat: 'magicmonsters', percent: 30 }] },

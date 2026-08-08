@@ -1,5 +1,6 @@
 import { BORDER_MODS } from '../data/mods'
 import { KOREAN_BORDER_MOD_EVIDENCE } from '../data/borderMods.ko'
+import { CHINESE_BORDER_MOD_EVIDENCE } from '../data/borderMods.zh'
 import type { Borders } from '../types'
 import { emptyBorders } from '../types'
 
@@ -32,6 +33,7 @@ interface BorderMatchVariant {
 
 const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
   const korean = KOREAN_BORDER_MOD_EVIDENCE[mod.id as keyof typeof KOREAN_BORDER_MOD_EVIDENCE]
+  const chinese = CHINESE_BORDER_MOD_EVIDENCE[mod.id as keyof typeof CHINESE_BORDER_MOD_EVIDENCE]
   return [
     { id: mod.id, canonicalText: mod.text, matchText: mod.text },
     ...(mod.aliases ?? []).map((matchText) => ({
@@ -41,6 +43,9 @@ const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
     })),
     ...(korean
       ? [{ id: mod.id, canonicalText: mod.text, matchText: korean.text }]
+      : []),
+    ...(chinese
+      ? [{ id: mod.id, canonicalText: mod.text, matchText: chinese.text }]
       : []),
   ]
 })
@@ -112,16 +117,171 @@ interface Match {
   text: string
   confidence: number
   exact: boolean
+  /** Scored through the CJK (keyword + bigram similarity) path. */
+  cjk?: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Simplified-Chinese matching. The CN client renders tooltips without spaces
+// between words, so the token-per-space machinery above cannot apply. We match
+// in a space-free canonical form using a keyword gate (a distinctive Han
+// bigram must appear) plus a bigram/unigram Dice similarity, with the same
+// numeric-tier guard as the word-based path.
+// ---------------------------------------------------------------------------
+
+const HAN_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
+
+/** CJK canonical form: NFKC + lowercase; keep Han, a-z, 0-9 only. Removing all
+ * whitespace absorbs both the unspaced client text and poedb's spaced
+ * rendering into one comparable form. */
+function cjkNormalize(text: string): string {
+  return text
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[’`]/g, "'")
+    .replace(/[^a-z0-9\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+/gu, '')
+}
+
+/** Tokenize a CJK-normalized string: overlapping Han bigrams, Latin words and
+ * digit runs. Set-based bigrams make similarity robust to word-order and
+ * measure-word differences between candidate phrasing and the real client. */
+function cjkTokens(text: string): string[] {
+  const out: string[] = []
+  let latin = ''
+  let digits = ''
+  const han: string[] = []
+  const flushLatin = () => {
+    if (latin) out.push(latin)
+    latin = ''
+  }
+  const flushDigits = () => {
+    if (digits) out.push(digits)
+    digits = ''
+  }
+  const flushHan = () => {
+    for (let i = 0; i + 1 < han.length; i++) out.push(han[i] + han[i + 1])
+    han.length = 0
+  }
+  for (const ch of text) {
+    if (/[a-z]/.test(ch)) {
+      flushDigits()
+      flushHan()
+      latin += ch
+    } else if (/\d/.test(ch)) {
+      flushLatin()
+      flushHan()
+      digits += ch
+    } else if (HAN_RE.test(ch)) {
+      flushLatin()
+      flushDigits()
+      han.push(ch)
+    } else {
+      flushLatin()
+      flushDigits()
+      flushHan()
+    }
+  }
+  flushLatin()
+  flushDigits()
+  flushHan()
+  return out
+}
+
+/** How often each Han bigram appears across all Chinese border evidence texts.
+ * Bigrams seen at most three times (same cutoff spirit as the word-path
+ * signature tokens) are distinctive enough to act as a keyword gate. */
+const cjkBigramFrequency = new Map<string, number>()
+for (const variant of borderMatchVariants) {
+  if (!HAN_RE.test(variant.matchText)) continue
+  const seen = new Set(cjkTokens(cjkNormalize(variant.matchText)))
+  for (const token of seen) {
+    if (HAN_RE.test(token)) {
+      cjkBigramFrequency.set(token, (cjkBigramFrequency.get(token) ?? 0) + 1)
+    }
+  }
+}
+
+const isDigitToken = (t: string) => /^\d+$/.test(t)
+
+/** Multiset Dice over the Han characters of a CJK-normalized string. */
+function hanUnigramDice(a: string, b: string): number {
+  const aHan = a.replace(/[a-z0-9]/g, '')
+  const bHan = b.replace(/[a-z0-9]/g, '')
+  if (aHan.length === 0 || bHan.length === 0) return 0
+  const count = (s: string) => {
+    const m = new Map<string, number>()
+    for (const ch of s) m.set(ch, (m.get(ch) ?? 0) + 1)
+    return m
+  }
+  const aCount = count(aHan)
+  const bCount = count(bHan)
+  let shared = 0
+  for (const [ch, n] of aCount) shared += Math.min(n, bCount.get(ch) ?? 0)
+  return (2 * shared) / (aHan.length + bHan.length)
+}
+
+/** Keyword + similarity score for a Chinese tooltip against one expected
+ * variant. Returns 0 when the candidate shares no distinctive keyword. */
+function cjkSimilarity(expected: string, actual: string): number {
+  const eTokens = cjkTokens(expected)
+  const aTokens = cjkTokens(actual)
+  if (eTokens.length === 0 || aTokens.length === 0) return 0
+
+  // Keyword gate: the candidate must contain at least one distinctive Han
+  // bigram of the expected text (e.g. 黄金/灯笼, 秽物/攀行, 通货/圣甲虫),
+  // which keeps 通货总增 and 圣甲虫总增 from cross-matching each other.
+  const hasKeyword = eTokens.some(
+    (t) =>
+      HAN_RE.test(t) &&
+      (cjkBigramFrequency.get(t) ?? 99) <= 3 &&
+      aTokens.includes(t),
+  )
+  if (!hasKeyword) return 0
+
+  const eSet = new Set(eTokens.filter((t) => !isDigitToken(t)))
+  const aSet = new Set(aTokens.filter((t) => !isDigitToken(t)))
+  let sharedBigram = 0
+  for (const t of eSet) if (aSet.has(t)) sharedBigram++
+  const bigramDice = eSet.size + aSet.size === 0 ? 0 : (2 * sharedBigram) / (eSet.size + aSet.size)
+  const unigramDice = hanUnigramDice(expected, actual)
+  let confidence = 0.6 * bigramDice + 0.4 * unigramDice
+
+  // Tier guard (same philosophy as the word path): never guess a tier number
+  // the OCR did not read from the same tooltip line.
+  const eNums = eTokens.filter(isDigitToken)
+  const aNums = aTokens.filter(isDigitToken)
+  if (eNums.length > 0 && !eNums.every((n) => aNums.includes(n))) confidence *= 0.6
+  return confidence
 }
 
 function matchBorder(raw: string): Match | null {
   const candidates = candidateLines(raw)
   if (candidates.length === 0) return null
 
+  // Space-free candidate forms for the Chinese path.
+  const cjkCandidates = [
+    ...new Set(candidates.map((candidate) => cjkNormalize(candidate))),
+  ].filter((candidate) => HAN_RE.test(candidate))
+
   const scored = borderMatchVariants.flatMap((variant) => {
     const expected = normalize(variant.matchText)
     const expectedTokens = expected.split(' ')
     const expectedNumbers = expectedTokens.filter((token) => /^\d+$/.test(token))
+
+    if (HAN_RE.test(variant.matchText)) {
+      // CJK path: keyword + bigram similarity over space-free forms.
+      const expectedCjk = cjkNormalize(variant.matchText)
+      return cjkCandidates.map((candidate) => {
+        const exact = candidate === expectedCjk
+        return {
+          id: variant.id,
+          text: variant.canonicalText,
+          confidence: exact ? 1 : cjkSimilarity(expectedCjk, candidate),
+          exact,
+          cjk: true,
+        }
+      })
+    }
 
     return candidates.map((candidate) => {
       const exact = candidate === expected
@@ -131,6 +291,7 @@ function matchBorder(raw: string): Match | null {
           text: variant.canonicalText,
           confidence: 1,
           exact,
+          cjk: false,
         }
       }
 
@@ -151,6 +312,7 @@ function matchBorder(raw: string): Match | null {
           text: variant.canonicalText,
           confidence: 0,
           exact,
+          cjk: false,
         }
       }
 
@@ -178,6 +340,7 @@ function matchBorder(raw: string): Match | null {
         text: variant.canonicalText,
         confidence,
         exact,
+        cjk: false,
       }
     })
   })
@@ -187,7 +350,10 @@ function matchBorder(raw: string): Match | null {
   )
   const best = scored[0]
   const runnerUp = scored.find((item) => item.id !== best.id)
-  if (best.confidence < 0.72) return null
+  // The CJK translations are unverified candidates against an unspaced OCR
+  // source, so their similarity scores run lower than word-level matches.
+  const confidenceFloor = best.cjk ? 0.62 : 0.72
+  if (best.confidence < confidenceFloor) return null
   if (!best.exact && runnerUp && best.confidence - runnerUp.confidence < 0.04) return null
   return best
 }

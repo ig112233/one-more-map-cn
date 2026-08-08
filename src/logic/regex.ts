@@ -10,11 +10,12 @@ import { voyageRewardKey } from './rewards'
 import type { ChartData, VoyageModDef, Weights } from '../types'
 
 const HANGUL_RE = /[\uac00-\ud7a3]/
+const HAN_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
 
 /**
  * Build the search text used to find one exact chart in the in-game inventory.
- * Imported Korean charts keep Hangul in their verbatim item-derived fields, so
- * the level term can follow the client language without a separate UI locale.
+ * Imported charts keep their client-language verbatim fields, so the level
+ * term follows the client language without a separate UI locale.
  */
 export function buildSingleChartSearch(chart: ChartData): string {
   const implicit =
@@ -24,7 +25,7 @@ export function buildSingleChartSearch(chart: ChartData): string {
       .find((mod) => mod && mod.scope !== 'self')?.text ??
     ''
   const sourceText = [chart.implicitText, chart.rawText, chart.name].filter(Boolean).join('\n')
-  const level = `${HANGUL_RE.test(sourceText) ? '지역 레벨' : 'Level'} ${chart.level}`
+  const level = `${HANGUL_RE.test(sourceText) ? '지역 레벨' : HAN_RE.test(sourceText) ? '区域等级' : 'Level'} ${chart.level}`
   return [chart.name, implicit, level].filter(Boolean).join(' ')
 }
 
@@ -91,14 +92,22 @@ export function buildChartSearch(targets: string[], otherPoolNames: string[]): s
   const targetSet = new Set(targets.map((t) => t.toLowerCase()))
   const others = otherPoolNames.map((s) => s.toLowerCase()).filter((o) => !targetSet.has(o))
 
+  // CJK chart names (CN client) carry no spaces between words, and the game
+  // search matches their unspaced text; strip spaces before fragmenting so
+  // fragments stay matchable. English names keep spaces so fragments never
+  // span a word boundary.
+  const fold = (s: string) => (HAN_RE.test(s) ? s.replace(/\s+/g, '') : s)
+  const foldedTargets = new Set([...targetSet].map(fold))
+  const foldedOthers = others.map(fold)
+
   const parts: string[] = []
-  for (const name of targetSet) {
+  for (const name of foldedTargets) {
     let best: string | null = null
     for (let len = 3; len <= name.length && !best; len++) {
       for (let i = 0; i + len <= name.length; i++) {
         const sub = name.slice(i, i + len)
         if (sub !== sub.trim()) continue
-        if (!others.some((o) => o.includes(sub))) {
+        if (!foldedOthers.some((o) => o.includes(sub))) {
           best = sub
           break
         }
