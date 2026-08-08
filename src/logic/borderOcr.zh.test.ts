@@ -37,7 +37,7 @@ describe('Chinese border OCR matching', () => {
   it('joins the two-line quantity-per-connection tooltip', () => {
     const result = parseBorderOcrPayload(
       block(
-        '相邻区域发现的物品数量每连接降低 50%\n相邻区域发现的物品数量提高 180%',
+        '相邻区域发现的物品数量按每条连接降低50%\n相邻区域发现的物品数量提高180%',
       ),
     )
 
@@ -46,11 +46,18 @@ describe('Chinese border OCR matching', () => {
 
   it('does not cross-match 通货总增 with 圣甲虫总增', () => {
     expect(
-      parseBorderOcrPayload(block('相邻区域发现的通货总增75%')).matches[0]?.id,
+      parseBorderOcrPayload(block('相邻区域中找到的通货总增75%')).matches[0]?.id,
     ).toBe('b-curr-2')
     expect(
-      parseBorderOcrPayload(block('相邻区域发现的圣甲虫总增75%')).matches[0]?.id,
+      parseBorderOcrPayload(block('相邻区域中找到的圣甲虫总增75%')).matches[0]?.id,
     ).toBe('b-scarab-2')
+  })
+
+  it('matches the client-verified experience sentence', () => {
+    const result = parseBorderOcrPayload(block('相邻区域内的玩家获得的经验值提高100%'))
+
+    expect(result.misses).toEqual([])
+    expect(result.matches[0]).toMatchObject({ id: 'b-exp-1', exact: true })
   })
 
   it('does not guess an unobserved numeric tier', () => {

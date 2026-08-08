@@ -25,8 +25,21 @@ type BorderModId = (typeof BORDER_MODS)[number]['id']
  * exact (e.g. 相邻区域的怪物群规模提高 X%).
  *
  * `translated-candidate` rows are AI/manual translations from the canonical
- * English following poedb.cn phrasing patterns, still awaiting client
- * verification.
+ * English, aligned to the sentence patterns confirmed by the corpus below;
+ * they still await client verification.
+ *
+ * Confirmed CN-client sentence patterns (from the corpus):
+ *   - 相邻区域的X提高Y%            (b-pack-2, b-mag-1)
+ *   - 相邻区域中找到的X总增Y%       (b-curr-2)
+ *   - 相邻区域包括Y个额外的X        (b-crabs-1)
+ *   - 相邻区域中X按每条连接提高Y%   (b-rareconn-2)
+ *   - 相邻区域内的玩家获得的X提高Y% (b-exp-1)
+ *   - 相邻海图在开始航行时有Y%的几率不被消耗 (b-keep-1)
+ *   - 相邻区域包含一个X            (b-locker)
+ *
+ * Still unverified (may drift from the client): the currency-drop family
+ * (b-ancient…b-scarabdrop, b-support), b-izaro/b-anchor measure words,
+ * b-decks/b-pirates/b-magicmods/b-minmagic/b-octoboss/b-crabboss/b-sulphdrop.
  *
  * Note the CN client renders these tooltips WITHOUT spaces between words
  * (相邻区域中找到的通货总增75%), so the OCR matcher compares space-free forms.
@@ -51,16 +64,16 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'translated-candidate',
   },
   'b-rare-1': {
-    text: '相邻区域的稀有怪物数量提高 50%',
+    text: '相邻区域中稀有怪物数量提高50%',
     source: 'translated-candidate',
   },
   'b-rare-2': {
-    text: '相邻区域的稀有怪物数量提高 75%',
+    text: '相邻区域中稀有怪物数量提高75%',
     source: 'translated-candidate',
     derivedFrom: 'b-rare-1',
   },
   'b-rare-3': {
-    text: '相邻区域的稀有怪物数量提高 100%',
+    text: '相邻区域中稀有怪物数量提高100%',
     source: 'translated-candidate',
     derivedFrom: 'b-rare-1',
   },
@@ -203,20 +216,20 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'client-screenshot',
   },
   'b-quantconn-1': {
-    text: '相邻区域发现的物品数量每连接降低 50%\n相邻区域发现的物品数量提高 120%',
+    text: '相邻区域发现的物品数量按每条连接降低50%\n相邻区域发现的物品数量提高120%',
     source: 'translated-candidate',
   },
   'b-quantconn-2': {
-    text: '相邻区域发现的物品数量每连接降低 50%\n相邻区域发现的物品数量提高 180%',
+    text: '相邻区域发现的物品数量按每条连接降低50%\n相邻区域发现的物品数量提高180%',
     source: 'translated-candidate',
     derivedFrom: 'b-quantconn-1',
   },
   'b-gold-1': {
-    text: '相邻区域怪物掉落装备的 25% 转化为金币',
+    text: '相邻区域怪物掉落装备的25%转化为金币',
     source: 'translated-candidate',
   },
   'b-gold-2': {
-    text: '相邻区域怪物掉落装备的 50% 转化为金币',
+    text: '相邻区域怪物掉落装备的50%转化为金币',
     source: 'translated-candidate',
     derivedFrom: 'b-gold-1',
   },
@@ -243,30 +256,30 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     derivedFrom: 'b-curr-2',
   },
   'b-scarab-1': {
-    text: '相邻区域发现的圣甲虫总增 50%',
+    text: '相邻区域中找到的圣甲虫总增50%',
     source: 'translated-candidate',
   },
   'b-scarab-2': {
-    text: '相邻区域发现的圣甲虫总增 75%',
+    text: '相邻区域中找到的圣甲虫总增75%',
     source: 'translated-candidate',
     derivedFrom: 'b-scarab-1',
   },
   'b-scarab-3': {
-    text: '相邻区域发现的圣甲虫总增 100%',
+    text: '相邻区域中找到的圣甲虫总增100%',
     source: 'translated-candidate',
     derivedFrom: 'b-scarab-1',
   },
   'b-rarity-1': {
-    text: '相邻区域发现的物品稀有度总增 50%',
+    text: '相邻区域中找到的物品稀有度总增50%',
     source: 'translated-candidate',
   },
   'b-rarity-2': {
-    text: '相邻区域发现的物品稀有度总增 75%',
+    text: '相邻区域中找到的物品稀有度总增75%',
     source: 'translated-candidate',
     derivedFrom: 'b-rarity-1',
   },
   'b-rarity-3': {
-    text: '相邻区域发现的物品稀有度总增 100%',
+    text: '相邻区域中找到的物品稀有度总增100%',
     source: 'translated-candidate',
     derivedFrom: 'b-rarity-1',
   },
@@ -275,17 +288,17 @@ export const CHINESE_BORDER_MOD_EVIDENCE = {
     source: 'translated-candidate',
   },
   'b-exp-1': {
-    text: '相邻区域的玩家获得 100% 额外经验',
-    source: 'translated-candidate',
+    text: '相邻区域内的玩家获得的经验值提高100%',
+    source: 'client-screenshot',
   },
   'b-exp-2': {
-    text: '相邻区域的玩家获得 150% 额外经验',
-    source: 'translated-candidate',
+    text: '相邻区域内的玩家获得的经验值提高150%',
+    source: 'confirmed-numeric-variant',
     derivedFrom: 'b-exp-1',
   },
   'b-exp-3': {
-    text: '相邻区域的玩家获得 200% 额外经验',
-    source: 'translated-candidate',
+    text: '相邻区域内的玩家获得的经验值提高200%',
+    source: 'confirmed-numeric-variant',
     derivedFrom: 'b-exp-1',
   },
   'b-magicmods': {
