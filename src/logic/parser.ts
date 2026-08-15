@@ -110,17 +110,23 @@ const KOREAN_DIALECT: ClipboardDialect = {
 // ---------------------------------------------------------------------------
 // Traditional-Chinese (TW / Garena 台服) dialect.
 //
-// Structural labels follow the TW client's standard terms (物品類別 / 稀有度 /
-// 區域等級 / 海圖形狀 / { 基底屬性 }), converted from the verified CN-client
-// labels; modifier lines are matched via the poedb.tw aliases on the mod defs.
-// poedb.tw renders directly from the TW client's stat_descriptions.txt, but
-// like the CN corpus the in-game Ctrl+C roll format (1(1-2)) differs from
-// poedb's (1—2) — normalizeAliasText collapses both forms. No real TW-client
-// chart copy has been verified yet (2026-08); re-check with real copies.
+// Structural labels verified against a real TW-client chart copy (2026-08,
+// provided by a TW player): the item header renders 物品種類: 海图 with a
+// MIXED script (種類 traditional, 海图 simplified - the TW client embeds
+// some simplified strings), Rarity is 稀有度 (not letter-spaced), the header
+// stat for the league currency is 亡者硫酸, the implicit marker is
+// { 固定詞綴 }, shapes are 終點/角落/…, and reward riders are front-loaded
+// (增加 45% 此區域中找到的亡者硫酸). 物品類別/海圖 forms are kept as
+// candidates in case other regions of the client render them traditional.
+// Modifier lines (the { 固定詞綴 } body) are matched via the poedb.tw aliases
+// on the mod defs; poedb.tw renders directly from the TW client's
+// stat_descriptions.txt, but like the CN corpus the in-game Ctrl+C roll
+// format (1(1-2)) differs from poedb's (1—2) - normalizeAliasText collapses
+// both forms.
 // ---------------------------------------------------------------------------
 const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
   itemClass: /^[ \t]*物品(?:類別|種類)\s*[:：]/im,
-  chartClass: /^[ \t]*物品(?:類別|種類)\s*[:：]\s*海圖[ \t]*$/im,
+  chartClass: /^[ \t]*物品(?:類別|種類)\s*[:：]\s*海[圖图][ \t]*$/im,
   rarity: /^稀\s*有\s*度\s*[:：]/i,
   areaLevel: /^區域等級\s*[:：]\s*(\d+)\s*$/im,
   shape: /^海圖形狀\s*[:：]\s*(.+?)\s*$/im,
@@ -136,8 +142,9 @@ const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
     { re: /聖甲蟲(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'scarabs' },
     { re: /通貨(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'currency' },
   ],
-  // 角落/交叉/直線/節點/末端 follow the verified CN client shapes; 轉角/轉彎,
-  // 十字, 三岔, 端點/盡頭 are traditional-form candidates.
+  // 角落/交叉/直線/節點 follow the verified CN client shapes; 終點 is the
+  // End shape confirmed on a real TW-client copy (2026-08); 轉角/十字/三岔/
+  // 端點/盡頭 are candidate forms.
   shapes: {
     角落: CORNER,
     轉角: CORNER,
@@ -150,13 +157,14 @@ const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
     交叉點: JUNCTION,
     直線: STRAIGHT,
     末端: END,
+    終點: END,
     端點: END,
     盡頭: END,
   },
   structural:
     /^(?:物品(?:類別|種類)\s*[:：]|稀\s*有\s*度\s*[:：]|區域等級\s*[:：]|物品等級\s*[:：]|需求\s*[:：]?|等級\s*[:：]\s*\d+|海圖形狀\s*[:：]|將此物品帶給|（)/i,
   rewardRider:
-    /^(?:此區域|該區域|相鄰區域)(?:中|內|裡|内)?(?:找到|發現|掉落)?的?.{0,20}?(?:提高|增加|總增|降低|減少)\s*\d+%/i,
+    /^(?:此區域|該區域|相鄰區域)(?:中|內|裡|内)?(?:找到|發現|掉落)?的?.{0,20}?(?:提高|增加|總增|降低|減少)\s*\d+%|^(?:增加|提高)\s*\d+%\s*(?:此區域|該區域|相鄰區域)(?:中|內|裡|内)?(?:找到|發現|掉落)?的?/i,
 }
 
 // ---------------------------------------------------------------------------

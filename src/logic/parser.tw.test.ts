@@ -4,12 +4,13 @@ import type { ChartData } from '../types'
 import { isChartClipboardText, parseChartText } from './parser'
 import twChart from './__fixtures__/charted.tw.txt?raw'
 
-// charted.tw.txt is a SYNTHETIC TW-client chart copy: the verified CN-client
-// fixture translated to the TW client's terms (物品類別 / 區域等級 / 海圖形狀 /
-// { 基底屬性 } / 亡者硫酸), with the implicit in the poedb.tw sentence
-// template (相鄰區域內含有額外 X(X-Y) 群章魚). No real TW-client Ctrl+C copy
-// has been verified yet (2026-08); treat these expectations as candidates
-// until a real copy confirms the sentence templates and roll format.
+// charted.tw.txt is a VERBATIM TW-client Ctrl+C copy (2026-08, provided by a
+// TW player): 近海 跋涉 / 珊瑚暗礁海图, 海底山脊, 終點 (End) shape, and the
+// 增加 30% 相鄰區域找到的魔法怪物數量 magic-monsters implicit. Note the TW
+// client renders a MIXED script (物品種類 traditional but 海图 simplified;
+// prefix/suffix mod lines mix 傷害 with 野蛮人/伤害), the header is 物品數量 /
+// 亡者硫酸, the implicit marker is { 固定詞綴 }, and reward riders are
+// front-loaded (增加 45% 此區域中找到的亡者硫酸).
 
 function parseOnlyChart(text: string): ChartData {
   const result = parseChartText(text)
@@ -21,50 +22,48 @@ function parseOnlyChart(text: string): ChartData {
 describe('Traditional-Chinese client support', () => {
   it('detects TW-client clipboard text as Chart items', () => {
     expect(isChartClipboardText(twChart)).toBe(true)
-    expect(isChartClipboardText(twChart.replace('物品類別', '物品種類'))).toBe(true)
+    expect(isChartClipboardText(twChart.replace('物品種類', '物品類別'))).toBe(true)
     expect(isChartClipboardText('物品類別: 環甲')).toBe(false)
   })
 
-  it('parses a TW chart into canonical ids and shape names', () => {
+  it('parses a real TW-client chart into canonical ids and shape names', () => {
     const chart = parseOnlyChart(twChart)
 
     expect(chart).toMatchObject({
-      name: '鹹水 短途 珊瑚暗礁海圖',
-      level: 82,
+      name: '近海 跋涉 珊瑚暗礁海图',
+      level: 83,
       areaType: 'seafloor-ridges',
-      shape: 'Corner',
-      edges: [true, true, false, false],
-      implicitText: '相鄰區域內含有額外 8(8-10) 群章魚',
-      modIds: ['adj-octo-1'],
+      shape: 'End',
+      edges: [true, false, false, false],
+      implicitText: '增加 30% 相鄰區域找到的魔法怪物數量',
+      modIds: ['adj-magic-1'],
       rewards: [
-        { stat: 'quantity', percent: 40 },
-        { stat: 'rarity', percent: 60 },
-        { stat: 'sulphur', percent: 30 },
-        { stat: 'packsize', percent: 16 },
+        { stat: 'quantity', percent: 110 },
+        { stat: 'sulphur', percent: 75 },
       ],
     })
   })
 
-  it('matches an inline roll of the range and the poedb-style bare range', () => {
-    // In-game inline roll 9(8-10) must resolve to the same octopus tier ...
+  it('matches poedb-style roll forms on a different implicit', () => {
+    // In-game inline roll 8(8-10) and poedb's bare (8—10) both resolve to
+    // the same octopus tier through normalizeAliasText.
     const inline = parseOnlyChart(
-      twChart.replace('相鄰區域內含有額外 8(8-10) 群章魚', '相鄰區域內含有額外 9(8-10) 群章魚'),
+      twChart.replace('增加 30% 相鄰區域找到的魔法怪物數量', '相鄰區域內含有額外 8(8-10) 群章魚'),
     )
     expect(inline.modIds).toEqual(['adj-octo-1'])
 
-    // ... and so must poedb's bare (8—10) rendering.
     const poedb = parseOnlyChart(
-      twChart.replace('相鄰區域內含有額外 8(8-10) 群章魚', '相鄰區域內含有額外(8—10)群章魚'),
+      twChart.replace('增加 30% 相鄰區域找到的魔法怪物數量', '相鄰區域內含有額外(8—10)群章魚'),
     )
     expect(poedb.modIds).toEqual(['adj-octo-1'])
   })
 
   it('resolves the Deep-Water rare-count implicit from its poedb.tw wording', () => {
     const t30 = parseOnlyChart(
-      twChart.replace('相鄰區域內含有額外 8(8-10) 群章魚', '增加 30% 相鄰區域找到的稀有怪物數量'),
+      twChart.replace('增加 30% 相鄰區域找到的魔法怪物數量', '增加 30% 相鄰區域找到的稀有怪物數量'),
     )
     const t60 = parseOnlyChart(
-      twChart.replace('相鄰區域內含有額外 8(8-10) 群章魚', '增加 60% 相鄰區域找到的稀有怪物數量'),
+      twChart.replace('增加 30% 相鄰區域找到的魔法怪物數量', '增加 60% 相鄰區域找到的稀有怪物數量'),
     )
 
     expect(t30.modIds).toEqual(['adj-rare-1'])
@@ -74,12 +73,12 @@ describe('Traditional-Chinese client support', () => {
   it('keeps explicit downside lines in rawText but drops structural lines', () => {
     const chart = parseOnlyChart(twChart)
 
-    expect(chart.rawText).toContain('怪物造成的 20(15-20)% 額外物理傷害視為火焰傷害')
-    expect(chart.rawText).toContain('怪物擊中時有機率偷取暴擊、狂怒和耐力球')
-    // Reward rider is structural and must not be duplicated into rawText.
+    expect(chart.rawText).toContain('怪物攻擊擊中時造成癱瘓')
+    expect(chart.rawText).toContain('增加 30(26-35)% 怪物傷害')
+    // Front-loaded reward riders are structural and must not be duplicated.
     expect(chart.rawText).not.toContain('此區域中找到的')
-    // { 前綴屬性 … } markers and the full-width parenthetical tooltips.
-    expect(chart.rawText).not.toContain('前綴屬性')
+    // { 前綴 … } markers and the full-width parenthetical tooltips.
+    expect(chart.rawText).not.toContain('前綴')
     expect(chart.rawText).not.toContain('被致盲')
   })
 
@@ -92,7 +91,7 @@ describe('Traditional-Chinese client support', () => {
   })
 
   const shapeCases = [
-    ['End', '末端', [true, false, false, false]],
+    ['End', '終點', [true, false, false, false]],
     ['Corner', '角落', [true, true, false, false]],
     ['Straight', '直線', [true, false, true, false]],
     ['Junction', '節點', [true, true, true, false]],
@@ -103,7 +102,7 @@ describe('Traditional-Chinese client support', () => {
     'maps the Traditional-Chinese %s shape to the canonical edges',
     (canonical, twShape, edges) => {
       const chart = parseOnlyChart(
-        twChart.replace('海圖形狀：角落', `海圖形狀：${twShape}`),
+        twChart.replace('海圖形狀： 終點', `海圖形狀： ${twShape}`),
       )
 
       expect(chart).toMatchObject({ shape: canonical, edges })
@@ -121,7 +120,7 @@ describe('Traditional-Chinese client support', () => {
 
   it('rejects an uncharted TW chart with a reason', () => {
     const uncharted = twChart.replace(
-      '相鄰區域內含有額外 8(8-10) 群章魚',
+      '增加 30% 相鄰區域找到的魔法怪物數量',
       '航程詞綴將於完成測繪後揭露',
     )
 

@@ -493,7 +493,7 @@ IsChartText(text) {
     return InStr(text, "Item Class: Chart")
         || InStr(text, "아이템 종류: 해도")
         || (InStr(text, "物品类别") && InStr(text, "海图"))
-        || ((InStr(text, "物品類別") || InStr(text, "物品種類")) && InStr(text, "海圖"))
+        || ((InStr(text, "物品類別") || InStr(text, "物品種類")) && (InStr(text, "海圖") || InStr(text, "海图")))
 }
 
 ExactBordersCalibrated() {
