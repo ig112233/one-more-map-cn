@@ -35,13 +35,25 @@ describe('Chinese border OCR matching', () => {
   })
 
   it('joins the two-line quantity-per-connection tooltip', () => {
+    // poedb.cn's datamined rendering uses 找到; the app's earlier 发现
+    // translation is no longer a stored variant (keeping 量提 distinctive for
+    // the b-rare gate), but still resolves through the fuzzy CJK path.
     const result = parseBorderOcrPayload(
+      block(
+        '相邻区域中找到的物品数量按每条连接降低 50%\n相邻区域中找到的物品数量提高 180%',
+      ),
+    )
+
+    expect(result.misses).toEqual([])
+    expect(result.matches[0]).toMatchObject({ id: 'b-quantconn-2', exact: true })
+
+    const legacy = parseBorderOcrPayload(
       block(
         '相邻区域发现的物品数量按每条连接降低50%\n相邻区域发现的物品数量提高180%',
       ),
     )
-
-    expect(result.matches[0]).toMatchObject({ id: 'b-quantconn-2', exact: true })
+    expect(legacy.misses).toEqual([])
+    expect(legacy.matches[0]).toMatchObject({ id: 'b-quantconn-2', exact: false })
   })
 
   it('matches the client-verified rare-monster sentence (b-rare, 实测 2026-08)', () => {

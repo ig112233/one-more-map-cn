@@ -1,5 +1,8 @@
 import { BORDER_MODS } from '../data/mods'
 import { KOREAN_BORDER_MOD_EVIDENCE } from '../data/borderMods.ko'
+import type { TraditionalChineseBorderModEvidence } from '../data/borderMods.tw'
+import { TRADITIONAL_CHINESE_BORDER_MOD_EVIDENCE } from '../data/borderMods.tw'
+import type { ChineseBorderModEvidence } from '../data/borderMods.zh'
 import { CHINESE_BORDER_MOD_EVIDENCE } from '../data/borderMods.zh'
 import type { Borders } from '../types'
 import { emptyBorders } from '../types'
@@ -33,9 +36,14 @@ interface BorderMatchVariant {
 
 const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
   const korean = KOREAN_BORDER_MOD_EVIDENCE[mod.id as keyof typeof KOREAN_BORDER_MOD_EVIDENCE]
-  const chinese = CHINESE_BORDER_MOD_EVIDENCE[mod.id as keyof typeof CHINESE_BORDER_MOD_EVIDENCE]
-  const chineseAliases: readonly string[] =
-    chinese && 'aliases' in chinese ? chinese.aliases : []
+  const chinese = CHINESE_BORDER_MOD_EVIDENCE[
+    mod.id as keyof typeof CHINESE_BORDER_MOD_EVIDENCE
+  ] as ChineseBorderModEvidence | undefined
+  const traditional = TRADITIONAL_CHINESE_BORDER_MOD_EVIDENCE[
+    mod.id as keyof typeof TRADITIONAL_CHINESE_BORDER_MOD_EVIDENCE
+  ] as TraditionalChineseBorderModEvidence | undefined
+  const chineseAliases: readonly string[] = chinese?.aliases ?? []
+  const traditionalAliases: readonly string[] = traditional?.aliases ?? []
   return [
     { id: mod.id, canonicalText: mod.text, matchText: mod.text },
     ...(mod.aliases ?? []).map((matchText) => ({
@@ -50,6 +58,16 @@ const borderMatchVariants: BorderMatchVariant[] = BORDER_MODS.flatMap((mod) => {
       ? [
           { id: mod.id, canonicalText: mod.text, matchText: chinese.text },
           ...chineseAliases.map((matchText) => ({
+            id: mod.id,
+            canonicalText: mod.text,
+            matchText,
+          })),
+        ]
+      : []),
+    ...(traditional
+      ? [
+          { id: mod.id, canonicalText: mod.text, matchText: traditional.text },
+          ...traditionalAliases.map((matchText) => ({
             id: mod.id,
             canonicalText: mod.text,
             matchText,
