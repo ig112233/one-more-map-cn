@@ -52,8 +52,21 @@ CoordMode "ToolTip", "Screen"
 ; =====================================================================
 
 ; ---------------- CONFIG ----------------
-PoeWinTitle     := "Path of Exile"           ; PoE window title
+; PoE window titles, matched by "contains" (case-sensitive in AHK v2).
+; The international client's window is titled "Path of Exile". CN-client
+; windows seen in the wild are "流放之路" and "Path Of Exile Game Client",
+; so all three are accepted. The first title is checked first.
+PoeWinTitles := ["Path of Exile", "流放之路", "Path Of Exile Game Client"]
+PoeWinTitle  := PoeWinTitles[1]  ; primary title (kept for reference/messages)
 BrowserWinTitle := "Allflame Voyage Solver"  ; the solver's browser tab title
+
+; Find the PoE game window among all known titles (returns its hwnd, or 0).
+FindPoeWindow() {
+    for t in PoeWinTitles
+        if (hwnd := WinExist(t))
+            return hwnd
+    return 0
+}
 
 GridCols := 6    ; columns in the Chart panel
 GridRows := 10   ; rows to sweep (overshooting is fine - empty cells skip)
@@ -360,13 +373,13 @@ WizardRender() {
 }
 
 WizardUpdateStatus() {
-    global WizardGui, WizardStepIndex, WizardHintCtl, PoeWinTitle, BrowserWinTitle
+    global WizardGui, WizardStepIndex, WizardHintCtl, BrowserWinTitle
     if !IsObject(WizardGui) || !WinExist("ahk_id " WizardGui.Hwnd)
         return
     steps := WizardSteps()
     if (steps[WizardStepIndex]["id"] != "welcome")
         return
-    poe := WinExist(PoeWinTitle) ? "OK - found" : "MISSING - start PoE (windowed)"
+    poe := FindPoeWindow() ? "OK - found" : "MISSING - start PoE (windowed)"
     web := WinExist(BrowserWinTitle) ? "OK - found" : "MISSING - open the solver site"
     WizardHintCtl.Value := "Path of Exile window:  " poe "`nSolver browser tab:     " web
 }
@@ -919,11 +932,13 @@ RunOcrHelper(arguments, cancellable := true) {
 }
 
 PreferredOcrLanguage() {
-    global PoeWinTitle
     if (OcrLanguage != "")
         return OcrLanguage
+    hwnd := FindPoeWindow()
+    if !hwnd
+        return ""
     try {
-        processName := WinGetProcessName(PoeWinTitle)
+        processName := WinGetProcessName(hwnd)
         if RegExMatch(processName, "i)_KG\.exe$")
             return "ko-KR"
         if RegExMatch(processName, "i)_CN\.exe$")
@@ -1032,8 +1047,11 @@ StopOcrServer() {
 }
 
 ScanBorders() {
-    global PoeWinTitle, BorderHoverDelay, BorderOcrAttempts, Running
-    WinGetPos &winX, &winY, &winW, &winH, PoeWinTitle
+    global BorderHoverDelay, BorderOcrAttempts, Running
+    hwnd := FindPoeWindow()
+    if !hwnd
+        return ""
+    WinGetPos &winX, &winY, &winW, &winH, hwnd
     ; one persistent helper per sweep: PowerShell boots and compiles while we
     ; hover the first border, then every border is a quick capture + read
     StartOcrServer()
@@ -1157,14 +1175,15 @@ PreviewBorders(*) {
         MsgBox "Borders aren't calibrated yet - finish the wizard's border step first."
         return
     }
-    if !WinExist(PoeWinTitle) {
-        MsgBox "Can't find the PoE window (" PoeWinTitle ")."
+    if !FindPoeWindow() {
+        MsgBox "Can't find the PoE window. Accepted titles: " PoeWinTitles.Join(" / ") "."
         return
     }
 
     Running := true
-    WinActivate PoeWinTitle
-    if !WinWaitActive(PoeWinTitle, , 2) {
+    poeHwnd := FindPoeWindow()
+    WinActivate poeHwnd
+    if !WinWaitActive(poeHwnd, , 2) {
         Running := false
         Flash "Couldn't focus PoE.", 3000
         return
@@ -1230,8 +1249,8 @@ RunBordersOnly(*) {
         MsgBox "Borders aren't calibrated yet. Right-click the tray icon -> Setup wizard..."
         return
     }
-    if !WinExist(PoeWinTitle) {
-        MsgBox "Can't find the PoE window (" PoeWinTitle ")."
+    if !FindPoeWindow() {
+        MsgBox "Can't find the PoE window. Accepted titles: " PoeWinTitles.Join(" / ") "."
         return
     }
     if !WinExist(BrowserWinTitle) {
@@ -1240,8 +1259,9 @@ RunBordersOnly(*) {
     }
 
     Running := true
-    WinActivate PoeWinTitle
-    if !WinWaitActive(PoeWinTitle, , 2) {
+    poeHwnd := FindPoeWindow()
+    WinActivate poeHwnd
+    if !WinWaitActive(poeHwnd, , 2) {
         Running := false
         Flash "Couldn't focus PoE.", 3000
         return
@@ -1283,8 +1303,8 @@ RunSweep(*) {
         MsgBox "Not calibrated yet. Right-click the tray icon -> Setup wizard..."
         return
     }
-    if !WinExist(PoeWinTitle) {
-        MsgBox "Can't find the PoE window (" PoeWinTitle ")."
+    if !FindPoeWindow() {
+        MsgBox "Can't find the PoE window. Accepted titles: " PoeWinTitles.Join(" / ") "."
         return
     }
     if !WinExist(BrowserWinTitle) {
@@ -1297,8 +1317,9 @@ RunSweep(*) {
     firstChart := "", allIdentical := true
 
     ; ---- Phase 1: copy every chart while staying in PoE ----
-    WinActivate PoeWinTitle
-    if !WinWaitActive(PoeWinTitle, , 2) {
+    poeHwnd := FindPoeWindow()
+    WinActivate poeHwnd
+    if !WinWaitActive(poeHwnd, , 2) {
         Running := false
         Flash "Couldn't focus PoE.", 3000
         return
