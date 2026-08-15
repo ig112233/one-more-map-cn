@@ -3,6 +3,7 @@ import { CHART_AREAS } from '../data/chartAreas'
 import type { ChartData } from '../types'
 import { isChartClipboardText, parseChartText } from './parser'
 import twChart from './__fixtures__/charted.tw.txt?raw'
+import twStarfishChart from './__fixtures__/charted.tw.starfish.txt?raw'
 
 // charted.tw.txt is a VERBATIM TW-client Ctrl+C copy (2026-08, provided by a
 // TW player): 近海 跋涉 / 珊瑚暗礁海图, 海底山脊, 終點 (End) shape, and the
@@ -95,6 +96,7 @@ describe('Traditional-Chinese client support', () => {
     ['Corner', '角落', [true, true, false, false]],
     ['Straight', '直線', [true, false, true, false]],
     ['Junction', '節點', [true, true, true, false]],
+    ['Junction', '交界處', [true, true, true, false]],
     ['Crossing', '交叉', [true, true, true, true]],
   ]
 
@@ -137,6 +139,28 @@ describe('Traditional-Chinese client support', () => {
 
     expect(result.rejected).toEqual([])
     expect(result.charts).toHaveLength(2)
+  })
+
+  it('parses the 交界處 starfish chart, stripping the unusable-value suffix', () => {
+    // Real TW-client copy (2026-08): the 6(6-7) starfish roll is out of range,
+    // so the client appends "— 無法使用的值" to the implicit line. The suffix
+    // must not block the adj-star-2 alias match, and 交界處 must resolve to
+    // the Junction (three-connection) shape.
+    const chart = parseOnlyChart(twStarfishChart)
+
+    expect(chart).toMatchObject({
+      name: '海域深降 沙質海床海圖',
+      level: 83,
+      areaType: 'abyssal-plain',
+      shape: 'Junction',
+      edges: [true, true, true, false],
+      implicitText: '相鄰區域內含有額外6(6-7)群巨大海星',
+      modIds: ['adj-star-2'],
+      rewards: [
+        { stat: 'quantity', percent: 138 },
+        { stat: 'packsize', percent: 18 },
+      ],
+    })
   })
 
   it('keeps the complete verified destination table with unique TW names', () => {
