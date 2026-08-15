@@ -142,15 +142,17 @@ const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
     { re: /聖甲蟲(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'scarabs' },
     { re: /通貨(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'currency' },
   ],
-  // 角落/交叉/直線/節點 follow the verified CN client shapes; 終點 (End) and
-  // 交界處 (Junction) are confirmed on real TW-client copies (2026-08);
-  // 交會處/交匯處/交叉路口/轉角/十字/三岔/端點/盡頭 are candidate forms.
+  // 角落/交叉/直線/節點 follow the verified CN client shapes; 終點 (End),
+  // 交界處 (Junction) and 十字口 (Crossing) are confirmed on real TW-client
+  // copies (2026-08); 交會處/交匯處/交叉路口/轉角/十字/三岔/端點/盡頭 are
+  // candidate forms.
   shapes: {
     角落: CORNER,
     轉角: CORNER,
     轉彎: CORNER,
     交叉: CROSSING,
     十字: CROSSING,
+    十字口: CROSSING,
     十字路口: CROSSING,
     交叉路口: CROSSING,
     節點: JUNCTION,

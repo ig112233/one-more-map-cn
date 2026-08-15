@@ -4,6 +4,7 @@ import type { ChartData } from '../types'
 import { isChartClipboardText, parseChartText } from './parser'
 import twChart from './__fixtures__/charted.tw.txt?raw'
 import twStarfishChart from './__fixtures__/charted.tw.starfish.txt?raw'
+import twOpboxChart from './__fixtures__/charted.tw.opbox.txt?raw'
 
 // charted.tw.txt is a VERBATIM TW-client Ctrl+C copy (2026-08, provided by a
 // TW player): 近海 跋涉 / 珊瑚暗礁海图, 海底山脊, 終點 (End) shape, and the
@@ -98,6 +99,7 @@ describe('Traditional-Chinese client support', () => {
     ['Junction', '節點', [true, true, true, false]],
     ['Junction', '交界處', [true, true, true, false]],
     ['Crossing', '交叉', [true, true, true, true]],
+    ['Crossing', '十字口', [true, true, true, true]],
   ]
 
   it.each(shapeCases)(
@@ -159,6 +161,28 @@ describe('Traditional-Chinese client support', () => {
       rewards: [
         { stat: 'quantity', percent: 138 },
         { stat: 'packsize', percent: 18 },
+      ],
+    })
+  })
+
+  it('parses the 十字口 operative-strongbox chart, stripping the suffix again', () => {
+    // Real TW-client copy (2026-08): 十字口 is the TW name for the Crossing
+    // (four-connection) shape, and the out-of-range operative-strongbox roll
+    // carries the same — 無法使用的值 suffix on the implicit line.
+    const chart = parseOnlyChart(twOpboxChart)
+
+    expect(chart).toMatchObject({
+      name: '海員郊遊 珊瑚礁海圖',
+      level: 83,
+      areaType: 'seafloor-ridges',
+      shape: 'Crossing',
+      edges: [true, true, true, true],
+      implicitText: '相鄰區域內含有額外 2 個特工的保險箱',
+      modIds: ['adj-opbox-1'],
+      rewards: [
+        { stat: 'quantity', percent: 55 },
+        { stat: 'rarity', percent: 38 },
+        { stat: 'sulphur', percent: 75 },
       ],
     })
   })
