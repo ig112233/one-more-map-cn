@@ -1,0 +1,92 @@
+# voyage-mods.tw.tsv — poedb.tw "Map Deep Water Chart Mods /144" 繁体词缀语料
+#
+# 来源: https://poedb.tw/tw/Sandy_Seabed_Chart 页 "Map Deep Water Chart Mods" 标签页
+# 抓取日期: 2026-08。poedb.tw 直接使用台服客户端 stat_descriptions.txt 渲染。
+# 状态: poedb 渲染文本 —— 尚未与真实台服客户端 Ctrl+C 复制文本逐条比对验证。
+# 用途: 台服客户端支持的海图词缀候选词表；入库 mods.ts 的 aliases 前必须用
+#       真实客户端文本复核（沿用 borderMods.ko.ts 的 client-screenshot 溯源制度）。
+#       本表只收录 app 会匹配计分的 adjacent/global 隐词缀（62 行）；
+#       海图自身的 self 前缀/后缀难度词缀 app 不匹配，保留为 rawText，不收录。
+#
+# 列: modId<TAB>scope<TAB>appEnglish<TAB>poedbTraditional<TAB>level<TAB>preSuf<TAB>notes
+#   modId            app 词缀 id
+#   scope            adjacent | global（与 app 的 mod def scope 一致）
+#   appEnglish       app 的 canonical 英文文本
+#   poedbTraditional poedb.tw 渲染文本；poedb 用 <br> 分行处在本文件用 ／ 连接；
+#                    [链接](Page) 之类 poedb 链接语法已去除
+#   level            poedb 词缀等级（tier 参考）
+#   preSuf           poedb 标注的前缀/后缀/传奇
+#   notes            差异与注意事项
+#
+# 已知差异（需用客户端复制文本裁定，勿直接采信）:
+#  1) roll 格式: poedb 显示 "(1—2)"，游戏内复制文本为 "1(1-2)" 内联格式
+#     （韩文/国服样本如此）。parser 的 normalizeAliasText 会同时折叠两种形式，
+#     因此库内两种写法都能匹配。
+#  2) 句法模板: poedb 渲染为"相鄰區域內含有額外…"，国服客户端实际为
+#     "相邻区域包含…个额外的…"，台服客户端的真实句法模板待实测。
+#  3) 亡者硫酸: poedb.tw 将 Dead Man's Sulphur 渲染为"亡者硫酸"（台服），
+#     与国服"亡者硫磺"不同；TW dialect 的 headerStats 同时接受两种写法。
+#
+modId	scope	appEnglish	poedbTraditional	level	preSuf	notes
+adj-ess-1	adjacent	Adjacent Areas contain 1-2 additional Imprisoned Monsters	相鄰區域內含有額外 (1—2) 名被禁錮的怪物	1		
+adj-ess-2	adjacent	Adjacent Areas contain 2-4 additional Imprisoned Monsters	相鄰區域內含有額外 (2—4) 名被禁錮的怪物	46		
+adj-ess-3	adjacent	Adjacent Areas contain 5 additional Imprisoned Monsters	相鄰區域內含有額外 5 名被禁錮的怪物	68		
+adj-box-1	adjacent	Adjacent Areas contain an additional Strongbox	相鄰區域內含有額外 1 個保險箱	1		
+adj-box-2	adjacent	Adjacent Areas contain 2-4 additional Strongboxes	相鄰區域內含有額外 (2—4) 個保險箱	46		
+adj-box-3	adjacent	Adjacent Areas contain 5 additional Strongboxes	相鄰區域內含有額外 5 個保險箱	68		
+adj-octo-1	adjacent	Adjacent Areas contain 8-10 additional packs of Octopi	相鄰區域內含有額外(8—10)群章魚	1		
+adj-octo-2	adjacent	Adjacent Areas contain 11-14 additional packs of Octopi	相鄰區域內含有額外(11—14)群章魚	68		
+adj-crab-1	adjacent	Adjacent Areas contain 8-10 additional packs of Crabs	相鄰區域內含有額外(8—10)群螃蟹	1		
+adj-crab-2	adjacent	Adjacent Areas contain 11-14 additional packs of Crabs	相鄰區域內含有額外(11—14)群螃蟹	68		
+adj-magic-1	adjacent	30% increased Magic Monsters	增加 30% 相鄰區域找到的魔法怪物數量	46		
+adj-magic-2	adjacent	60% increased Magic Monsters	增加 60% 相鄰區域找到的魔法怪物數量	68		
+adj-rare-1	adjacent	30% increased number of Rare Monsters	增加 30% 相鄰區域找到的稀有怪物數量	46		
+adj-rare-2	adjacent	60% increased number of Rare Monsters	增加 60% 相鄰區域找到的稀有怪物數量	68		
+adj-msg-1	adjacent	Adjacent Areas contain an additional Message in a Bottle	相鄰區域內含有額外 1 個瓶中信	68		
+adj-msg-2	adjacent	Adjacent Areas contain 2 additional Messages in Bottles	相鄰區域內含有額外 2 個瓶中信	68		
+adj-fish	adjacent	Adjacent Areas contain highly prized and exotic Fish	相鄰區域內含有高價且珍稀的魚類	68		
+adj-wisps-1	adjacent	Monsters have a chance to be Empowered by 2000 Wildwood Wisps	怪物有機率受到 2000 個荒林妖精強化	68		
+adj-wisps-2	adjacent	Monsters have a chance to be Empowered by 4000 Wildwood Wisps	怪物有機率受到 4000 個荒林妖精強化	68		
+adj-atziri	adjacent	Atziri's Influence	阿茲里之息	68		
+adj-gold-1	adjacent	40% of Equipment dropped by Monsters in Area is converted to Gold	相鄰區域內的怪物掉落的裝備有 40% 會改為掉落金幣	1		
+adj-gold-2	adjacent	80% of Equipment dropped by Monsters in Area is converted to Gold	相鄰區域內的怪物掉落的裝備有 80% 會改為掉落金幣	46		
+adj-spirit-1	adjacent	Adjacent Areas contain an additional cage of Tormented Spirits	相鄰區域內含有額外 1 個關滿罪魂的囚牢	46		
+adj-spirit-2	adjacent	Adjacent Areas contain 2 additional cages of Tormented Spirits	相鄰區域內含有額外 2 個關滿罪魂的囚牢	68		
+adj-divbox-1	adjacent	Adjacent Areas contain 2 additional Diviner's Strongboxes	相鄰區域內含有額外 2 個命運的保險箱	46		
+adj-divbox-2	adjacent	Adjacent Areas contain 3 additional Diviner's Strongboxes	相鄰區域內含有額外 3 個命運的保險箱	68		
+adj-arcbox-1	adjacent	Adjacent Areas contain 2 additional Arcanist's Strongboxes	相鄰區域內含有額外 2 個奧術師的保險箱	1		
+adj-arcbox-2	adjacent	Adjacent Areas contain 3 additional Arcanist's Strongboxes	相鄰區域內含有額外 3 個奧術師的保險箱	68		
+adj-opbox-1	adjacent	Adjacent Areas contain 2 additional Operative's Strongboxes	相鄰區域內含有額外 2 個特工的保險箱	68		
+adj-opbox-2	adjacent	Adjacent Areas contain 3 additional Operative's Strongboxes	相鄰區域內含有額外 3 個特工的保險箱	78		
+adj-barrel-1	adjacent	Adjacent Areas contain 12-15 additional Clusters of Barrels	相鄰區域內含有額外 (12—15) 堆木桶	1		
+adj-barrel-2	adjacent	Adjacent Areas contain 16-20 additional Clusters of Mysterious Barrels	相鄰區域內含有額外 (16—20) 堆木桶	68		
+adj-star-1	adjacent	Adjacent Areas contains 4-5 additional Giant Starfish	相鄰區域內含有額外(4—5)群巨大海星	46		
+adj-star-2	adjacent	Adjacent Areas contains 6-7 additional Giant Starfish	相鄰區域內含有額外(6—7)群巨大海星	68		
+adj-fracture	adjacent	Items dropped in adjacent Areas have 2% chance to be Fractured	相鄰區域內掉落的物品有 2% 機率為破裂物品	68		
+adj-lantern	adjacent	Adjacent Areas contain 4 additional Golden Lanterns	相鄰區域內含有額外 4 個黃金燈籠	1		poedb 原文带 [黃金燈籠](Golden_Lanterns) 链接，已去除
+adj-pantheon	adjacent	Rare Monsters in adjacent Areas will have a Pantheon Modifier	相鄰區域內的稀有怪物擁有一條眾神殿詞綴	68		
+adj-uring-1	adjacent	Rings dropped in adjacent Areas have 10% chance to instead drop as a Unique Ring	相鄰區域內掉落的戒指有 10% 機率改為掉落一個傳奇戒指	1		
+adj-uring-2	adjacent	Rings dropped in adjacent Areas have 20% chance to instead drop as a Unique Ring	相鄰區域內掉落的戒指有 20% 機率改為掉落一個傳奇戒指	47		
+adj-uamu-1	adjacent	Amulets dropped in adjacent Areas have 10% chance to instead drop as a Unique Amulet	相鄰區域內掉落的項鍊有 10% 機率改為掉落一條傳奇項鍊	1		
+adj-uamu-2	adjacent	Amulets dropped in adjacent Areas have 20% chance to instead drop as a Unique Amulet	相鄰區域內掉落的項鍊有 20% 機率改為掉落一條傳奇項鍊	47		
+adj-ubelt-1	adjacent	Belts dropped in adjacent Areas have 10% chance to instead drop as a Unique Belt	相鄰區域內掉落的腰帶有 10% 機率改為掉落一條傳奇腰帶	1		
+adj-ubelt-2	adjacent	Belts dropped in adjacent Areas have 20% chance to instead drop as a Unique Belt	相鄰區域內掉落的腰帶有 20% 機率改為掉落一條傳奇腰帶	47		
+voy-soul	global	Players in Area have Soul Eater	玩家在航程中所有區域時擁有噬魂者	1		poedb 原文带 [噬魂者](Soul_Eater) 链接，已去除
+voy-pack-1	global	5% increased Pack size	增加 5% 航程中所有區域的怪物群大小	1		
+voy-pack-2	global	7% increased Pack size	增加 7% 航程中所有區域的怪物群大小	68		
+voy-quant-1	global	8% increased Quantity of Items found in this Area	增加 8% 航程中所有區域找到的物品數量	1		
+voy-quant-2	global	10% increased Quantity of Items found in this Area	增加 10% 航程中所有區域找到的物品數量	68		
+voy-rarity-1	global	7% increased Rarity of Items found in this Area	增加 7% 航程中所有區域找到的物品稀有度	1		
+voy-rarity-2	global	9% increased Rarity of Items found in this Area	增加 9% 航程中所有區域找到的物品稀有度	68		
+voy-jelly	global	All Voyage Areas contain Friendly Jellyfish	相鄰區域內含有一隻友善的水母	1		
+voy-sulph-1	global	15% increased Dead Man's Sulphur found in this Area	增加 15% 航程中所有區域內找到的亡者硫酸	1		
+voy-sulph-2	global	20% increased Dead Man's Sulphur found in this Area	增加 20% 航程中所有區域內找到的亡者硫酸	46		
+voy-sulph-3	global	25% increased Dead Man's Sulphur found in this Area	增加 25% 航程中所有區域內找到的亡者硫酸	68		
+voy-rare	global	25% increased number of Rare Monsters	增加 25% 航程中所有區域找到的稀有怪物數量	46		
+voy-magic	global	25% increased Magic Monsters	增加 25% 航程中所有區域找到的魔法怪物數量	46		
+voy-noequip	global	Monsters in all Voyage Areas cannot drop Equipment, Flasks or Tinctures	怪物無法掉落裝備、藥劑、或萃取物	68		
+voy-minmagic	global	Monsters in Area are at least Magic	航程中所有區域的所有怪物為魔法	68		
+voy-possess	global	100% chance for Rare Monsters in Area to be Possessed	航程中所有區域的稀有怪物有 100% 機率被附身	46		
+voy-essence	global	Rare monsters that are natural inhabitants are imprisoned by Essences	航程中所有區域的原生稀有怪物受到精髓囚禁	68		
+voy-fracture	global	50% chance for Rare Monsters to Fracture on death	航程內的稀有怪物有 50% 機率於死亡時散裂	68		poedb 原文带 [散裂](Monster_Fracturing) 链接，已去除
+voy-flask	global	Flasks found in all Voyage Areas have 100% chance to have 20% Quality	航程中所有區域內找到的藥劑有 100% 機率擁有 20% 品質	68		

@@ -119,7 +119,7 @@ describe('Korean border OCR matching', () => {
 describe('Korean Windows OCR selection in the AHK importer', () => {
   it('detects the Korean PoE executable and passes a language hint to the helper', () => {
     expect(ahkImporter).toContain('PreferredOcrLanguage()')
-    expect(ahkImporter).toContain('WinGetProcessName(PoeWinTitle)')
+    expect(ahkImporter).toContain('WinGetProcessName(hwnd)')
     expect(ahkImporter).toContain('RegExMatch(processName, "i)_KG\\.exe$")')
     expect(ahkImporter).toContain('return "ko-KR"')
     expect(ahkImporter).toContain(' -PreferredLanguage ')
@@ -134,7 +134,10 @@ describe('Korean Windows OCR selection in the AHK importer', () => {
     expect(preferredBranch).toBeGreaterThan(-1)
     expect(englishBranch).toBeGreaterThan(preferredBranch)
     expect(ahkImporter).toContain("$preferredPrimary = ($preferredTag -split '-', 2)[0]")
-    expect(ahkImporter).toContain('$tag -ieq $preferredTag -or $primary -ieq $preferredPrimary')
+    // Script/region-aware scoring: zh-Hant must never fall back to zh-CN.
+    expect(ahkImporter).toContain("$preferredTag -ieq 'ko-KR' -and $primary -ieq 'ko'")
+    expect(ahkImporter).toContain("$preferredTag -ieq 'zh-Hant' -and $tag -imatch '^zh[-_ ]?(hant|tw|hk|mo)'")
+    expect(ahkImporter).toContain("$preferredTag -ieq 'zh-CN' -and $tag -imatch '^zh[-_ ]?(hans|cn|sg)'")
   })
 
   it('uses the selected language in image and persistent-server modes', () => {

@@ -55,8 +55,9 @@ CoordMode "ToolTip", "Screen"
 ; PoE window titles, matched by "contains" (case-sensitive in AHK v2).
 ; The international client's window is titled "Path of Exile". CN-client
 ; windows seen in the wild are "流放之路" and "Path Of Exile Game Client",
-; so all three are accepted. The first title is checked first.
-PoeWinTitles := ["Path of Exile", "流放之路", "Path Of Exile Game Client"]
+; and the TW (Garena) client may be titled "流亡黯道", so all are accepted.
+; The first title is checked first.
+PoeWinTitles := ["Path of Exile", "流放之路", "Path Of Exile Game Client", "流亡黯道"]
 PoeWinTitle  := PoeWinTitles[1]  ; primary title (kept for reference/messages)
 BrowserWinTitle := "Allflame Voyage Solver"  ; the solver's browser tab title
 
@@ -80,9 +81,11 @@ PasteDelay    := 90    ; ms after the single big paste
 ClipTimeout   := 0.2   ; seconds to wait for Ctrl+C (only empty cells wait the full time)
 OcrTimeout    := 90    ; seconds before a stuck Windows OCR scan is stopped
 ; Override the border-OCR recognition language. Leave empty to auto-detect.
-; The CN client (PathOfExile_x64.exe, same name as the international client,
-; so it cannot be told apart) needs "zh-CN" plus the Windows Simplified-
-; Chinese OCR language feature installed.
+; - CN client window ("流放之路" / "Path Of Exile Game Client"): "zh-CN" plus
+;   the Windows Simplified-Chinese OCR feature (Language.OCR~~~zh-Hans).
+; - TW client window ("流亡黯道"): "zh-Hant" plus the Windows Traditional-
+;   Chinese OCR feature (Language.OCR~~~zh-Hant).
+; Auto-detect checks the game process name (_CN/_TW/_KG) and the window title.
 OcrLanguage   := ""
 ; If it ever MISSES a chart, raise HoverDelay ~10ms at a time (the cursor
 ; isn't settling before Ctrl+C). If the final paste drops some, raise PasteDelay.
@@ -699,19 +702,26 @@ function New-OcrEngine {
 
     # Localized PoE clients need a matching OCR engine. Windows can expose the
     # Korean pack as either "ko" or a regional tag such as "ko-KR", so match
-    # both the exact tag and its primary language before considering fallback.
+    # both the exact tag and its script/region variants before falling back to
+    # any tag with the same primary language. Plain primary-language fallback
+    # is unsafe for Chinese because both scripts share primary "zh": zh-Hant
+    # (Traditional) must never silently pick zh-CN and vice versa.
     if (-not [string]::IsNullOrWhiteSpace($PreferredLanguage)) {
         $preferredTag = $PreferredLanguage.Trim()
         $preferredPrimary = ($preferredTag -split '-', 2)[0]
-        $preferred = @($available | Where-Object {
+        $preferred = @($available | ForEach-Object {
             $tag = $_.LanguageTag
             $primary = ($tag -split '-', 2)[0]
-            $tag -ieq $preferredTag -or $primary -ieq $preferredPrimary
-        } | Sort-Object {
-            if ($_.LanguageTag -ieq $preferredTag) { 0 }
-            elseif ($_.LanguageTag -ieq $preferredPrimary) { 1 }
-            else { 2 }
-        })
+            $score =
+                if ($tag -ieq $preferredTag) { 0 }
+                elseif ($tag -ilike ($preferredTag + '-*')) { 1 }
+                elseif ($preferredTag -ieq 'zh-Hant' -and $tag -imatch '^zh[-_ ]?(hant|tw|hk|mo)') { 2 }
+                elseif ($preferredTag -ieq 'zh-CN' -and $tag -imatch '^zh[-_ ]?(hans|cn|sg)') { 2 }
+                elseif ($preferredTag -ieq 'ko-KR' -and $primary -ieq 'ko') { 3 }
+                elseif ($primary -ieq $preferredPrimary) { 4 }
+                else { 99 }
+            [pscustomobject]@{ Language = $_; Score = $score }
+        } | Where-Object { $_.Score -lt 99 } | Sort-Object Score | ForEach-Object { $_.Language })
 
         foreach ($language in $preferred) {
             $engine = [Windows.Media.Ocr.OcrEngine]::TryCreateFromLanguage($language)
@@ -721,9 +731,12 @@ function New-OcrEngine {
         }
 
         throw ("Windows OCR language '$preferredTag' is not installed. " +
-            'Install the matching Windows language OCR feature. For Korean, open an elevated ' +
-            'Command Prompt and run: DISM /Online /Add-Capability ' +
-            '/CapabilityName:Language.OCR~~~ko-KR~0.0.1.0')
+            'Install the matching Windows language OCR feature. For Korean run: ' +
+            'DISM /Online /Add-Capability /CapabilityName:Language.OCR~~~ko-KR~0.0.1.0. ' +
+            'For Traditional Chinese run: DISM /Online /Add-Capability ' +
+            '/CapabilityName:Language.OCR~~~zh-Hant~0.0.1.0. ' +
+            'For Simplified Chinese run: DISM /Online /Add-Capability ' +
+            '/CapabilityName:Language.OCR~~~zh-Hans~0.0.1.0')
     }
 
     # English clients keep the original English-first behavior. Do not require
@@ -941,7 +954,14 @@ PreferredOcrLanguage() {
         processName := WinGetProcessName(hwnd)
         if RegExMatch(processName, "i)_KG\.exe$")
             return "ko-KR"
+        if RegExMatch(processName, "i)_TW\.exe$")
+            return "zh-Hant"
         if RegExMatch(processName, "i)_CN\.exe$")
+            return "zh-CN"
+        title := WinGetTitle(hwnd)
+        if InStr(title, "流亡黯道")
+            return "zh-Hant"
+        if InStr(title, "流放之路")
             return "zh-CN"
     }
     return ""

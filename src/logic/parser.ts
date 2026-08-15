@@ -108,6 +108,58 @@ const KOREAN_DIALECT: ClipboardDialect = {
 }
 
 // ---------------------------------------------------------------------------
+// Traditional-Chinese (TW / Garena 台服) dialect.
+//
+// Structural labels follow the TW client's standard terms (物品類別 / 稀有度 /
+// 區域等級 / 海圖形狀 / { 基底屬性 }), converted from the verified CN-client
+// labels; modifier lines are matched via the poedb.tw aliases on the mod defs.
+// poedb.tw renders directly from the TW client's stat_descriptions.txt, but
+// like the CN corpus the in-game Ctrl+C roll format (1(1-2)) differs from
+// poedb's (1—2) — normalizeAliasText collapses both forms. No real TW-client
+// chart copy has been verified yet (2026-08); re-check with real copies.
+// ---------------------------------------------------------------------------
+const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
+  itemClass: /^[ \t]*物品(?:類別|種類)\s*[:：]/im,
+  chartClass: /^[ \t]*物品(?:類別|種類)\s*[:：]\s*海圖[ \t]*$/im,
+  rarity: /^稀\s*有\s*度\s*[:：]/i,
+  areaLevel: /^區域等級\s*[:：]\s*(\d+)\s*$/im,
+  shape: /^海圖形狀\s*[:：]\s*(.+?)\s*$/im,
+  shapeLabel: '海圖形狀',
+  implicitMarker: /^\{\s*(?:基底屬性|固定詞綴|固定屬性|固有詞綴)\s*\}$/i,
+  uncharted: /航程詞綴(?:將|會)(?:於|在)(?:完成)?測繪後(?:揭露|揭示|顯現)/i,
+  headerStats: [
+    { re: /物品數量\s*[:：]\s*\+?(\d+)%/i, stat: 'quantity' },
+    { re: /物品稀有度\s*[:：]\s*\+?(\d+)%/i, stat: 'rarity' },
+    { re: /金幣(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'gold' },
+    { re: /亡者(?:硫酸|硫磺)\s*[:：]\s*\+?(\d+)%/i, stat: 'sulphur' },
+    { re: /怪物群大小\s*[:：]\s*\+?(\d+)%/i, stat: 'packsize' },
+    { re: /聖甲蟲(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'scarabs' },
+    { re: /通貨(?:發現量)?\s*[:：]\s*\+?(\d+)%/i, stat: 'currency' },
+  ],
+  // 角落/交叉/直線/節點/末端 follow the verified CN client shapes; 轉角/轉彎,
+  // 十字, 三岔, 端點/盡頭 are traditional-form candidates.
+  shapes: {
+    角落: CORNER,
+    轉角: CORNER,
+    轉彎: CORNER,
+    交叉: CROSSING,
+    十字: CROSSING,
+    十字路口: CROSSING,
+    節點: JUNCTION,
+    三岔: JUNCTION,
+    交叉點: JUNCTION,
+    直線: STRAIGHT,
+    末端: END,
+    端點: END,
+    盡頭: END,
+  },
+  structural:
+    /^(?:物品(?:類別|種類)\s*[:：]|稀\s*有\s*度\s*[:：]|區域等級\s*[:：]|物品等級\s*[:：]|需求\s*[:：]?|等級\s*[:：]\s*\d+|海圖形狀\s*[:：]|將此物品帶給|（)/i,
+  rewardRider:
+    /^(?:此區域|該區域|相鄰區域)(?:中|內|裡|内)?(?:找到|發現|掉落)?的?.{0,20}?(?:提高|增加|總增|降低|減少)\s*\d+%/i,
+}
+
+// ---------------------------------------------------------------------------
 // Simplified-Chinese dialect.
 //
 // Structural labels verified against real CN-client chart copies (2026-08,
@@ -159,8 +211,8 @@ const CHINESE_DIALECT: ClipboardDialect = {
     /^(?:此区域|该区域|相邻区域)(?:中|内|里)?(?:找到|发现|掉落)的?.{0,20}?(?:提高|增加|总增|降低|减少)\s*\d+%/i,
 }
 
-const DIALECTS = [ENGLISH_DIALECT, KOREAN_DIALECT, CHINESE_DIALECT]
-const ITEM_START_RE = /(?=^[ \t]*(?:Item Class|아이템 종류|物品(?:类别|种类))\s*[:：])/gim
+const DIALECTS = [ENGLISH_DIALECT, KOREAN_DIALECT, CHINESE_DIALECT, TRADITIONAL_CHINESE_DIALECT]
+const ITEM_START_RE = /(?=^[ \t]*(?:Item Class|아이템 종류|物品(?:类别|种类|類別|種類))\s*[:：])/gim
 const SEPARATOR_RE = /^-{3,}$/
 
 function normalizeClipboardText(text: string): string {
@@ -172,14 +224,30 @@ function normalizeLookupText(text: string): string {
 }
 
 /** Alias matching ignores a rolled value when the clipboard also includes
- * its invariant range (for example, both 8(8-10) and 9(8-10) become 8-10).
- * Keep this separate from general lookup normalization: shape lookup and the
- * verbatim implicit text must not be changed by roll normalization. */
+ * its invariant range (for example, both 8(8-10) and 9(8-10) become 8-10),
+ * and collapses a bare parenthesised range the same way ((8—10) becomes 8-10)
+ * so poedb-style text and in-game inline rolls compare identically. Chinese
+ * aliases/lines are compared without whitespace because clients may render
+ * numbers with or without surrounding spaces (相鄰區域內含有額外(8—10)群章魚 vs
+ * 相鄰區域內含有額外 8(8-10) 群章魚); space-separated Korean/English aliases are
+ * left untouched. Keep this separate from general lookup normalization: shape
+ * lookup and the verbatim implicit text must not be changed by roll
+ * normalization. */
+const HAN_RE_ALIAS = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
 function normalizeAliasText(text: string): string {
-  return normalizeLookupText(text).replace(
-    /\d+(?:\.\d+)?\s*\(\s*(\d+(?:\.\d+)?)\s*[-‐‑‒–—―−~～]\s*(\d+(?:\.\d+)?)\s*\)/g,
-    '$1-$2',
-  )
+  const normalized = normalizeLookupText(text)
+  const compact = HAN_RE_ALIAS.test(normalized)
+    ? normalized.replace(/\s+/g, '')
+    : normalized
+  return compact
+    .replace(
+      /\d+(?:\.\d+)?\s*\(\s*(\d+(?:\.\d+)?)\s*[-‐‑‒–—―−~～]\s*(\d+(?:\.\d+)?)\s*\)/g,
+      '$1-$2',
+    )
+    .replace(
+      /\(\s*(\d+(?:\.\d+)?)\s*[-‐‑‒–—―−~～]\s*(\d+(?:\.\d+)?)\s*\)/g,
+      '$1-$2',
+    )
 }
 
 function dialectForItem(item: string): ClipboardDialect | undefined {
