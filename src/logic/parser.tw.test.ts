@@ -34,6 +34,7 @@ describe('Traditional-Chinese client support', () => {
     expect(chart).toMatchObject({
       name: '近海 跋涉 珊瑚暗礁海图',
       level: 83,
+      clientLang: 'tw',
       areaType: 'seafloor-ridges',
       shape: 'End',
       edges: [true, false, false, false],

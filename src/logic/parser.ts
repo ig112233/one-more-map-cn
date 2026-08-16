@@ -6,7 +6,7 @@
 
 import { VOYAGE_MODS } from '../data/mods'
 import { chartAreaTypeForText } from '../data/chartAreas'
-import type { ChartData, Edges, ModEffect, Stat } from '../types'
+import type { ChartClientLang, ChartData, Edges, ModEffect, Stat } from '../types'
 
 let uidCounter = 0
 export function newUid(): string {
@@ -25,6 +25,9 @@ interface HeaderStat {
 }
 
 interface ClipboardDialect {
+  /** game client language this dialect parses; stored on imported charts so
+   *  copied search strings reuse the client's own terms */
+  lang: ChartClientLang
   itemClass: RegExp
   chartClass: RegExp
   rarity: RegExp
@@ -48,6 +51,7 @@ const JUNCTION: ShapeDefinition = { canonical: 'Junction', edges: [true, true, t
 const CROSSING: ShapeDefinition = { canonical: 'Crossing', edges: [true, true, true, true] }
 
 const ENGLISH_DIALECT: ClipboardDialect = {
+  lang: 'en',
   itemClass: /^[ \t]*Item Class\s*[:：]/im,
   chartClass: /^[ \t]*Item Class\s*[:：]\s*Chart[ \t]*$/im,
   rarity: /^Rarity\s*[:：]/i,
@@ -80,6 +84,7 @@ const ENGLISH_DIALECT: ClipboardDialect = {
 }
 
 const KOREAN_DIALECT: ClipboardDialect = {
+  lang: 'ko',
   itemClass: /^[ \t]*아이템 종류\s*[:：]/im,
   chartClass: /^[ \t]*아이템 종류\s*[:：]\s*해도[ \t]*$/im,
   rarity: /^아이템 희귀도\s*[:：]/i,
@@ -125,6 +130,7 @@ const KOREAN_DIALECT: ClipboardDialect = {
 // both forms.
 // ---------------------------------------------------------------------------
 const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
+  lang: 'tw',
   itemClass: /^[ \t]*物品(?:類別|種類)\s*[:：]/im,
   chartClass: /^[ \t]*物品(?:類別|種類)\s*[:：]\s*海[圖图][ \t]*$/im,
   rarity: /^稀\s*有\s*度\s*[:：]/i,
@@ -186,6 +192,7 @@ const TRADITIONAL_CHINESE_DIALECT: ClipboardDialect = {
 // on the mod defs; unaliased ones keep their verbatim text.
 // ---------------------------------------------------------------------------
 const CHINESE_DIALECT: ClipboardDialect = {
+  lang: 'zh',
   itemClass: /^[ \t]*物品(?:类别|种类)\s*[:：]/im,
   chartClass: /^[ \t]*物品(?:类别|种类)\s*[:：]\s*海图[ \t]*$/im,
   rarity: /^稀\s*有\s*度\s*[:：]/i,
@@ -491,6 +498,7 @@ export function parseChartText(text: string): ParseResult {
     charts.push({
       uid: newUid(),
       name,
+      clientLang: dialect.lang,
       level,
       edges: shape.edges,
       areaType,

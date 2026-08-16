@@ -29,6 +29,7 @@ describe('Chinese client support', () => {
     expect(chart).toMatchObject({
       name: '咸水 短途 珊瑚暗礁海图',
       level: 82,
+      clientLang: 'zh',
       areaType: 'seafloor-ridges',
       shape: 'Corner',
       edges: [true, true, false, false],

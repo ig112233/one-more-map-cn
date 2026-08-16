@@ -3,6 +3,7 @@ import type { ChartData } from '../types'
 import englishChartText from './__fixtures__/charted.en.txt?raw'
 import koreanChartText from './__fixtures__/charted.ko.txt?raw'
 import chineseChartText from './__fixtures__/charted.zh.txt?raw'
+import twChartText from './__fixtures__/charted.tw.txt?raw'
 import { parseChartText } from './parser'
 import { buildChartSearch, buildSingleChartSearch } from './regex'
 
@@ -70,6 +71,45 @@ describe('buildSingleChartSearch', () => {
     expect(search).toContain('区域等级 82')
     expect(search).not.toContain('Level 82')
     expect(search).not.toContain('지역 레벨')
+  })
+
+  it('uses the TW Area Level term for a Traditional-Chinese-client chart', () => {
+    // The TW client is a MIXED script (物品種類: 海图); without the recorded
+    // clientLang the old character heuristic would pick the simplified 区域等级
+    // and the paste would never match 區域等級: 83 in the TW client.
+    const search = buildSingleChartSearch(parseOne(twChartText))
+
+    expect(search).toContain('區域等級 83')
+    expect(search).toContain('增加 30% 相鄰區域找到的魔法怪物數量')
+    expect(search).not.toContain('区域等级')
+    expect(search).not.toContain('Level 83')
+  })
+
+  it('detects Traditional Chinese from legacy TW verbatim text without a recorded language', () => {
+    const chart: ChartData = {
+      uid: 'legacy-tw',
+      name: '海員郊遊 珊瑚礁海圖',
+      level: 83,
+      edges: [true, true, true, true],
+      modIds: [],
+      implicitText: '相鄰區域內含有額外 2 個特工的保險箱',
+    }
+
+    expect(buildSingleChartSearch(chart)).toContain('區域等級 83')
+  })
+
+  it('keeps the CN Area Level term for legacy simplified text without a recorded language', () => {
+    const chart: ChartData = {
+      uid: 'legacy-cn',
+      name: '咸水 短途 珊瑚暗礁海图',
+      level: 82,
+      edges: [true, true, false, false],
+      modIds: [],
+      implicitText: '相邻区域包含 8(8-10) 个额外的章鱼群',
+    }
+
+    expect(buildSingleChartSearch(chart)).toContain('区域等级 82')
+    expect(buildSingleChartSearch(chart)).not.toContain('區域等級')
   })
 
   it('detects Chinese from an unknown verbatim implicit', () => {

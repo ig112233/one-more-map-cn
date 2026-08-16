@@ -12,10 +12,40 @@ import type { ChartData, VoyageModDef, Weights } from '../types'
 const HANGUL_RE = /[\uac00-\ud7a3]/
 const HAN_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
 
+// Traditional-only characters common in TW-client chart text. The TW client
+// renders a MIXED script (e.g. 物品種類: 海图), so any traditional char is
+// enough to identify it; fully-simplified CN text contains none of these.
+// Only used to disambiguate charts that predate the recorded clientLang.
+const TW_ONLY_HAN_RE =
+  /[區圖級詞綴數測繪顯現記錄與後體質獲該對為這點邊靈寶險響屬進遠淵淺環島灣鄰傷機電凍緩觸術擊運亂澤溝灘曠儲給艦隊長難殘敗發沒遺墳頭額聖蟲隱覺壇籠鑰鯨龜盜鏽]/
+
+/** In-game "Area Level:" term in the chart's client language. Recorded
+ * imports use their exact language; manual/legacy charts fall back to text
+ * heuristics (TW first via traditional chars, then CN, else Korean/English). */
+function levelTermFor(chart: ChartData): string {
+  switch (chart.clientLang) {
+    case 'ko':
+      return '지역 레벨'
+    case 'tw':
+      return '區域等級'
+    case 'zh':
+      return '区域等级'
+    case 'en':
+      return 'Level'
+  }
+  const sourceText = [chart.implicitText, chart.rawText, chart.name]
+    .filter(Boolean)
+    .join('\n')
+  if (HANGUL_RE.test(sourceText)) return '지역 레벨'
+  if (HAN_RE.test(sourceText)) return TW_ONLY_HAN_RE.test(sourceText) ? '區域等級' : '区域等级'
+  return 'Level'
+}
+
 /**
  * Build the search text used to find one exact chart in the in-game inventory.
- * Imported charts keep their client-language verbatim fields, so the level
- * term follows the client language without a separate UI locale.
+ * Imported charts keep their client-language verbatim fields (name, implicit)
+ * and the level term follows the recorded client language - a TW import gets
+ * 區域等級, a CN import 区域等级 - so the paste matches the user's own client.
  */
 export function buildSingleChartSearch(chart: ChartData): string {
   const implicit =
@@ -24,9 +54,9 @@ export function buildSingleChartSearch(chart: ChartData): string {
       .map((id) => voyageModById.get(id))
       .find((mod) => mod && mod.scope !== 'self')?.text ??
     ''
-  const sourceText = [chart.implicitText, chart.rawText, chart.name].filter(Boolean).join('\n')
-  const level = `${HANGUL_RE.test(sourceText) ? '지역 레벨' : HAN_RE.test(sourceText) ? '区域等级' : 'Level'} ${chart.level}`
-  return [chart.name, implicit, level].filter(Boolean).join(' ')
+  return [chart.name, implicit, `${levelTermFor(chart)} ${chart.level}`]
+    .filter(Boolean)
+    .join(' ')
 }
 
 /**

@@ -168,11 +168,17 @@ export type ChartAreaType =
   | 'undersea-groves'
   | 'kisharas-rest'
 
+/** Game client language a chart's text was copied from. */
+export type ChartClientLang = 'en' | 'ko' | 'zh' | 'tw'
+
 /** A chart instance owned by the player. */
 export interface ChartData {
   uid: string
   name: string
   level: number
+  /** client language the chart text was imported from; lets the copied
+   *  in-game search string use that language's verbatim terms */
+  clientLang?: ChartClientLang
   edges: Edges
   /** locale-independent destination/area type used by curated strategies */
   areaType?: ChartAreaType
