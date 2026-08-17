@@ -27,6 +27,8 @@ import { ALL_STATS, STAT_LABELS, borderTouches, emptyBoard } from './types'
 /** discrete/guaranteed effects (drops, spawns, conversions) rather than plain % scalars */
 const isNotable = (text: string) => !/^\d+% (increased|more|reduced) /i.test(text)
 
+const ISSUES_URL = 'https://github.com/one-more-map/one-more-map.github.io/issues'
+
 /** bump the key to show a fresh announcement banner */
 const ANNOUNCE_KEY = 'announce-ocr-borders'
 
@@ -471,6 +473,15 @@ export default function App() {
           >
             更新
           </button>
+          <a
+            className="feedback-link"
+            href={ISSUES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Bug reports and feature requests on GitHub - actively monitored"
+          >
+            🐛 反馈
+          </a>
           <button title="浏览所有词缀并关掉你不想要的" onClick={() => setShowMods(true)}>
             词缀{state.disabledMods.length > 0 ? `（${state.disabledMods.length} 关闭）` : ''}
           </button>
@@ -744,6 +755,10 @@ export default function App() {
             pool={state.pool}
             borders={state.borders}
             onSelect={(id) => patch({ strategyId: id })}
+            layoutChoice={state.layoutChoice}
+            onLayoutChoice={(sid, lid) =>
+              patch({ layoutChoice: { ...state.layoutChoice, [sid]: lid } })
+            }
           />
         </section>
       </main>

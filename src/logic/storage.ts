@@ -25,6 +25,8 @@ export interface AppState {
   /** per-piece-type keep counts ("bank 2 Starfish for Meatfish"); keys from
    *  PIECE_TYPES, missing entries use each type's recommended default */
   pieceKeeps: Record<string, number>
+  /** chosen layout variant per strategy id (missing = the strategy's default) */
+  layoutChoice: Record<string, string>
 }
 
 export const defaultState = (): AppState => ({
@@ -40,6 +42,7 @@ export const defaultState = (): AppState => ({
   strategyId: null,
   strategyReservations: defaultStrategyReservations(),
   pieceKeeps: {},
+  layoutChoice: {},
 })
 
 const LS_KEY = 'allflame-voyage-solver'
@@ -132,6 +135,14 @@ function revive(obj: unknown): AppState {
             Object.entries(o.pieceKeeps).filter(
               (entry): entry is [string, number] =>
                 typeof entry[1] === 'number' && Number.isFinite(entry[1]),
+            ),
+          )
+        : {},
+    layoutChoice:
+      typeof o.layoutChoice === 'object' && o.layoutChoice !== null && !Array.isArray(o.layoutChoice)
+        ? Object.fromEntries(
+            Object.entries(o.layoutChoice).filter(
+              (entry): entry is [string, string] => typeof entry[1] === 'string',
             ),
           )
         : {},
