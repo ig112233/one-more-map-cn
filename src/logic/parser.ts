@@ -348,11 +348,87 @@ function matchLocalizedAlias(line: string): string | null {
   return matchingIds.size === 1 ? [...matchingIds][0] : null
 }
 
-/** Match a revealed implicit line against localized aliases first, then retain
- * the existing English fuzzy matcher and its tie-breaking behaviour. */
-function matchImplicit(line: string): string | null {
+// ---------------------------------------------------------------------------
+// CJK fuzzy fallback. sigWords strips every non-ASCII char, so the English
+// keyword matcher below has nothing to work with on Chinese/TW lines: until
+// now a CN/TW implicit that was not a VERBATIM alias stayed unparsed (empty
+// modIds -> strategies could not see the chart). These helpers score the line
+// against the localized corpora (zh + aliases of every non-self mod) with
+// Dice-over-character-bigrams, which tolerates a missing particle, an inline
+// roll (2(2-3)), a reordered word, or an 一个/1 spelling drift.
+// ---------------------------------------------------------------------------
+
+/** significant CJK characters of a line, as a set of character bigrams */
+function cjkBigrams(s: string): Set<string> {
+  const clean = s.replace(/[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g, '')
+  const out = new Set<string>()
+  for (let i = 0; i + 1 < clean.length; i++) out.add(clean.slice(i, i + 2))
+  return out
+}
+
+/** Dice coefficient 2·|A∩B| / (|A|+|B|): 1 = identical, 0 = disjoint. */
+function diceOverlap(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0
+  let inter = 0
+  for (const x of a) if (b.has(x)) inter++
+  return (2 * inter) / (a.size + b.size)
+}
+
+/** a near-miss wording must still be mostly the same sentence */
+const CJK_MATCH_THRESHOLD = 0.6
+
+/** CJK fuzzy fallback: pick the best-scoring non-self mod among its verbatim
+ *  alias forms (the zh field is the app's own translation, not game text - it
+ *  uses different word orderings that collide with typed-box near-misses, so
+ *  it is deliberately excluded), mirroring the English matcher's
+ *  ratio/length/number tie-breaks: higher overlap wins, then a longer
+ *  (digit-independent) signature, then the alias number closest to the
+ *  line's rolled value. */
+function matchCjkFuzzy(line: string): string | null {
+  const lineBigrams = cjkBigrams(line)
+  if (lineBigrams.size < 3) return null
+  const lineNum = parseFloat(line.replace(/\([^)]*\)/g, ' ').match(/\d+/)?.[0] ?? '')
+  const scored: { id: string; score: number; len: number; dist: number }[] = []
+  for (const mod of VOYAGE_MODS) {
+    if (mod.scope === 'self') continue
+    let best = { score: 0, len: 0, dist: Infinity }
+    for (const form of mod.aliases ?? []) {
+      const normalized = normalizeAliasText(form)
+      const sig = cjkBigrams(normalized)
+      if (sig.size < 3) continue
+      const score = diceOverlap(lineBigrams, sig)
+      const digits = normalized.match(/\d+/g)?.map(Number) ?? []
+      const dist =
+        Number.isNaN(lineNum) || digits.length === 0
+          ? Infinity
+          : Math.min(...digits.map((n) => Math.abs(n - lineNum)))
+      if (
+        score > best.score ||
+        (score === best.score && sig.size > best.len) ||
+        (score === best.score && sig.size === best.len && dist < best.dist)
+      ) {
+        best = { score, len: sig.size, dist }
+      }
+    }
+    if (best.score >= CJK_MATCH_THRESHOLD) scored.push({ id: mod.id, ...best })
+  }
+  if (scored.length === 0) return null
+  scored.sort((a, b) => b.score - a.score || b.len - a.len || a.dist - b.dist)
+  return scored[0].id
+}
+
+/** Match a revealed implicit line against localized aliases first (exact,
+ * roll-normalized), then a CJK bigram fuzzy pass for near-miss Chinese/TW
+ * wordings, then the existing English keyword matcher. Exported so charts
+ * already imported with an unrecognized implicit can re-match from their
+ * verbatim text (Library chart editor). */
+export function matchImplicit(line: string): string | null {
   const aliasId = matchLocalizedAlias(line)
   if (aliasId) return aliasId
+
+  // CJK lines have no English keywords for the matcher below (sigWords strips
+  // every non-ASCII char), so route them through the bigram pass instead.
+  if (HAN_RE_ALIAS.test(line)) return matchCjkFuzzy(line)
 
   const lineWords = new Set(sigWords(line))
   if (lineWords.size === 0) return null

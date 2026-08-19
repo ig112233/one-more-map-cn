@@ -3,7 +3,7 @@ import { VOYAGE_MODS, modText, voyageModById } from '../data/mods'
 import type { StrategyReservationPreferences } from '../data/strategies'
 import { selectPieceBank, type PieceType } from '../logic/pieceKeeps'
 import { voyageRewardKey } from '../logic/rewards'
-import { newUid } from '../logic/parser'
+import { matchImplicit, newUid } from '../logic/parser'
 import type { Board, ChartData, Edges, Weights } from '../types'
 import { STAT_LABELS, STAT_SHORT } from '../types'
 import { EdgeGlyph } from './icons'
@@ -85,6 +85,7 @@ function ChartEditor({ chart, onUpdate }: { chart: ChartData; onUpdate: (c: Char
       </div>
       {(() => {
         const isSelf = (id: string) => voyageModById.get(id)?.scope === 'self'
+        const rawImplicit = chart.implicitText
         const selfIds = chart.modIds.filter(isSelf)
         const implicitId = chart.modIds.find((id) => !isSelf(id)) ?? ''
         const commit = (s0: string, s1: string, imp: string) =>
@@ -130,6 +131,24 @@ function ChartEditor({ chart, onUpdate }: { chart: ChartData; onUpdate: (c: Char
                 ))}
               </optgroup>
             </select>
+            {rawImplicit && (
+              <button
+                type="button"
+                className="rematch-btn"
+                title="用原始词缀文本重新匹配词缀库（含简/繁模糊容错）"
+                onClick={() => {
+                  const id = matchImplicit(rawImplicit)
+                  if (id) {
+                    const kept = chart.modIds.filter(
+                      (m) => voyageModById.get(m)?.scope === 'self',
+                    )
+                    onUpdate({ ...chart, modIds: [...kept, id] })
+                  }
+                }}
+              >
+                ↻ 从原文重新识别词缀
+              </button>
+            )}
           </>
         )
       })()}

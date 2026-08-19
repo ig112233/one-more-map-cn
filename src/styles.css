@@ -961,6 +961,11 @@ textarea {
   white-space: pre-wrap;
   font-family: Consolas, monospace;
 }
+.rematch-btn {
+  align-self: flex-start;
+  font-size: 11px;
+  padding: 3px 8px;
+}
 
 /* ------- board ------- */
 .board-toolbar {
