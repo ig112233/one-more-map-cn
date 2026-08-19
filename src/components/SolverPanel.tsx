@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { buildBestModRegex } from '../logic/regex'
+import { buildBestModRegex, type RegexLang } from '../logic/regex'
 import { solve, type SolverResult } from '../logic/solver'
 import type { AppState } from '../logic/storage'
 import type { AdjacencyMode } from '../logic/scoring'
@@ -26,6 +26,7 @@ interface Props {
 export function SolverPanel({ state, activeStrategy, onPatch, onResults, onClose }: Props) {
   const [busy, setBusy] = useState(false)
   const [regexCap, setRegexCap] = useState(50)
+  const [regexLang, setRegexLang] = useState<RegexLang>('en')
   const [copied, setCopied] = useState(false)
   const [solveNote, setSolveNote] = useState('')
   // while a strategy is active it overrides the manual weights everywhere here
@@ -34,8 +35,8 @@ export function SolverPanel({ state, activeStrategy, onPatch, onResults, onClose
   // strategies' banks off wholesale (the wizard's counts stay saved)
   const availableReservations = STRATEGY_RESERVATION_OPTIONS
   const bestRegex = useMemo(
-    () => buildBestModRegex(weights, regexCap, new Set(state.disabledMods)),
-    [weights, regexCap, state.disabledMods],
+    () => buildBestModRegex(weights, regexCap, new Set(state.disabledMods), regexLang),
+    [weights, regexCap, state.disabledMods, regexLang],
   )
 
   const copyRegex = async () => {
@@ -238,7 +239,8 @@ export function SolverPanel({ state, activeStrategy, onPatch, onResults, onClose
 
       <div className="panel-title small">最佳海图正则</div>
       <div className="muted small-note" style={{ marginTop: 0 }}>
-        粘贴进游戏内海图搜索，以高亮值得带上的海图，依据你上面的权重。无需导入。实验性功能：
+        粘贴进游戏内海图搜索，以高亮值得带上的海图，依据你上面的权重。无需导入。选择你的客户端语言：
+        简体/繁体版使用已录入的客户端词缀文本（相邻/航行词缀；海图自身难度词缀暂未收录客户端原文，故中文正则不覆盖它们）。实验性功能：
         游戏内搜索不一定支持此语法，上线后才知道。
       </div>
       <div className="regex-row">
@@ -250,6 +252,18 @@ export function SolverPanel({ state, activeStrategy, onPatch, onResults, onClose
           {bestRegex.included.length} 个词缀 · {bestRegex.regex.length} 字符
         </span>
         <span className="spacer" />
+        <label className="muted">
+          语言{' '}
+          <select
+            value={regexLang}
+            onChange={(e) => setRegexLang(e.target.value as RegexLang)}
+            title="正则去匹配哪套客户端语言的海图文本"
+          >
+            <option value="en">英文</option>
+            <option value="zh">简中</option>
+            <option value="tw">繁中</option>
+          </select>
+        </label>
         <label className="muted">
           最大{' '}
           <select value={regexCap} onChange={(e) => setRegexCap(parseInt(e.target.value, 10))}>

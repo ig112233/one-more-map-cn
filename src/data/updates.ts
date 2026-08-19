@@ -13,6 +13,13 @@ export interface UpdateEntry {
 
 export const UPDATES: UpdateEntry[] = [
   {
+    date: '2026-08-19',
+    tag: 'new',
+    title: '最佳海图正则：简中 / 繁中客户端版本',
+    detail:
+      '最佳海图正则现在按你的客户端语言生成：英文、简中或繁中。中文正则直接使用已录入的客户端词缀原文（相邻/航行词缀），并为无空格的中文客户端文本折叠成无空格的匹配片段；海图自身的难度词缀暂缺客户端原文，中文正则暂不覆盖。',
+  },
+  {
     date: '2026-08-14',
     tag: 'new',
     title: 'HDR 感知边框捕获（实验性）',

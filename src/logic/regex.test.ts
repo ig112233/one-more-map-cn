@@ -4,8 +4,15 @@ import englishChartText from './__fixtures__/charted.en.txt?raw'
 import koreanChartText from './__fixtures__/charted.ko.txt?raw'
 import chineseChartText from './__fixtures__/charted.zh.txt?raw'
 import twChartText from './__fixtures__/charted.tw.txt?raw'
+import { VOYAGE_MODS, voyageModById } from '../data/mods'
+import { DEFAULT_WEIGHTS } from './rewards'
 import { parseChartText } from './parser'
-import { buildChartSearch, buildSingleChartSearch } from './regex'
+import {
+  buildBestModRegex,
+  buildChartSearch,
+  buildSingleChartSearch,
+  type RegexLang,
+} from './regex'
 
 function parseOne(text: string): ChartData {
   const result = parseChartText(text)
@@ -146,5 +153,134 @@ describe('buildChartSearch', () => {
     // Shortest unique 3-char fragment of the space-folded name.
     expect(search).toBe('海兵苦')
     expect(search).not.toMatch(/\s/)
+  })
+})
+
+const HAN_ONLY = /^\p{Script=Han}+$/u
+
+// Re-derive the alias classifier the same way regex.ts does, to prove the
+// emitted fragments are substrings of the recorded CN/TW client aliases and
+// not of the paraphrased zh display text.
+const TW_CHAR_RE =
+  /[區圖級詞綴數測繪顯現記錄與後體質獲該對為這點邊靈寶險響屬進遠淵淺環島灣鄰傷機電凍緩觸術擊運亂澤溝灘曠儲給艦隊長難殘敗發沒遺墳頭額聖蟲隱覺壇籠鑰鯨龜盜鏽個備傳價劑奧幣帶擁於會條機滿為無燈眾茲藥裝質錮鍊關隻項類魚黃]/
+const HAN_RESRC = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
+const HANGUL_RE = /[\uac00-\ud7a3]/
+const hanOnly = (s: string) => s.replace(/[^\p{Script=Han}]+/gu, '')
+
+function assertFragmentsComeFromAliases(
+  regex: string,
+  included: { id: string; aliases?: readonly string[]; zh?: string; text: string }[],
+  lang: 'zh' | 'tw',
+) {
+  const fragments = regex.split('|')
+  expect(fragments).toHaveLength(included.length)
+  included.forEach((m, i) => {
+    const alias = (m.aliases ?? []).find(
+      (a) =>
+        lang === 'tw'
+          ? TW_CHAR_RE.test(a)
+          : HAN_RESRC.test(a) && !TW_CHAR_RE.test(a) && !HANGUL_RE.test(a),
+    )
+    expect(alias, `${m.id} lacks a ${lang} alias`).toBeTruthy()
+    expect(hanOnly(alias!), `${m.id} fragment ${fragments[i]} not in its ${lang} alias`).toContain(
+      fragments[i],
+    )
+  })
+}
+
+function zeroWeights(): Record<string, number> {
+  return Object.fromEntries(Object.keys(DEFAULT_WEIGHTS).map((k) => [k, 0]))
+}
+
+describe('buildBestModRegex language support', () => {
+  it('stays English letters/spaces by default', () => {
+    const { regex, included } = buildBestModRegex(DEFAULT_WEIGHTS, 250)
+
+    expect(regex).toBeTruthy()
+    expect(regex).toMatch(/^[a-z |]+$/)
+    expect(included.length).toBeGreaterThan(0)
+    // self map-mod families (cm-*) have verbatim English, so they stay included
+    expect(included.some((m) => m.scope === 'self')).toBe(true)
+  })
+
+  it('builds a Simplified-Chinese regex from the recorded CN client aliases', () => {
+    const { regex, included } = buildBestModRegex(DEFAULT_WEIGHTS, 250, undefined, 'zh')
+
+    expect(included.length).toBeGreaterThan(0)
+    // fragments are pure Han runs with no numbers/punct/spaces - the CN client
+    // tooltip text is unspaced, so roomless fragments can match it
+    expect(regex.split('|').every((f) => HAN_ONLY.test(f))).toBe(true)
+    // 一个 real CN-corpus fragment is present (adj-atziri 阿兹里之息 is classified CN)
+    expect(regex).toContain('阿兹里')
+    // self map-mod families (cm-*) only have paraphrased zh text, so they drop out
+    expect(included.some((m) => m.scope === 'self')).toBe(false)
+    assertFragmentsComeFromAliases(regex, included, 'zh')
+  })
+
+  it('builds a Traditional-Chinese regex from the recorded TW client aliases', () => {
+    const { regex, included } = buildBestModRegex(DEFAULT_WEIGHTS, 250, undefined, 'tw')
+
+    expect(included.length).toBeGreaterThan(0)
+    expect(regex.split('|').every((f) => HAN_ONLY.test(f))).toBe(true)
+    // traditional-script fragments appear (區域/額外/個…); includes the TW alias
+    // 阿茲里之息 which has no char in the old TW_ONLY_HAN_RE heuristic alone
+    expect(regex).toContain('阿茲里')
+    expect(regex).toMatch(/[區域額外個無機滿關]/)
+    // the same family is not duplicated across scripts
+    expect(regex).not.toContain('阿兹里')
+    // self families are excluded here too
+    expect(included.some((m) => m.scope === 'self')).toBe(false)
+    assertFragmentsComeFromAliases(regex, included, 'tw')
+  })
+
+  it('respects the length cap in every language', () => {
+    for (const lang of ['en', 'zh', 'tw'] as RegexLang[]) {
+      const cap = 50
+      const { regex } = buildBestModRegex(DEFAULT_WEIGHTS, cap, undefined, lang)
+      expect(regex.length).toBeLessThanOrEqual(cap)
+    }
+  })
+
+  it('drops families that have no verbatim client text in the chosen language', () => {
+    const weights = { ...zeroWeights(), 'self:quant': 10 }
+    // only quantity self-mod families have value; they have verbatim English,
+    // but only a paraphrased zh display text - so they survive in EN only
+    const en = buildBestModRegex(weights, 250, undefined, 'en')
+    expect(en.regex).toBeTruthy()
+    expect(en.included[0]?.scope).toBe('self')
+    expect(buildBestModRegex(weights, 250, undefined, 'zh').regex).toBe('')
+    expect(buildBestModRegex(weights, 250, undefined, 'tw').regex).toBe('')
+  })
+})
+
+describe('buildBestModRegex alias classification coverage', () => {
+  it('every adjacent/global mod has both CN and TW client text recorded', () => {
+    const missing: Record<string, string[]> = {}
+    for (const m of VOYAGE_MODS) {
+      if (m.scope === 'self') continue
+      for (const lang of ['zh', 'tw'] as RegexLang[]) {
+        const alias = (m.aliases ?? []).find(
+          (a) =>
+            lang === 'tw'
+              ? TW_CHAR_RE.test(a)
+              : HAN_RESRC.test(a) && !TW_CHAR_RE.test(a) && !HANGUL_RE.test(a),
+        )
+        if (!alias) missing[m.id] = [...(missing[m.id] ?? []), lang]
+      }
+    }
+    expect(missing).toEqual({})
+  })
+
+  it('classifies every CJK alias into exactly one language', () => {
+    const misclassified: string[] = []
+    for (const m of VOYAGE_MODS) {
+      for (const alias of m.aliases ?? []) {
+        if (!HAN_RESRC.test(alias)) continue
+        const isTw = TW_CHAR_RE.test(alias)
+        const isCn = !isTw && !HANGUL_RE.test(alias)
+        if (!isTw && !isCn) misclassified.push(`${m.id}: ${alias}`)
+      }
+    }
+    expect(misclassified).toEqual([])
   })
 })

@@ -19,6 +19,16 @@ const HAN_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/
 const TW_ONLY_HAN_RE =
   /[區圖級詞綴數測繪顯現記錄與後體質獲該對為這點邊靈寶險響屬進遠淵淺環島灣鄰傷機電凍緩觸術擊運亂澤溝灘曠儲給艦隊長難殘敗發沒遺墳頭額聖蟲隱覺壇籠鑰鯨龜盜鏽]/
 
+// Traditional-only characters used to classify a localized alias as TW-client
+// text. Starts from the hand-curated TW_ONLY_HAN_RE set (which drives chart
+// language guessing) and adds the supplementary characters observed in the
+// TW voyage-mod corpus (voyage-mods.tw.tsv) whose simplified forms differ
+// (個備傳價劑奧幣帶擁於會條機滿為無燈眾茲藥裝質錮鍊關隻項類魚黃).
+// Fully-simplified CN text contains none of these, so a single hit identifies
+// the line as Traditional Chinese.
+export const TW_CLIENT_CHAR_RE =
+  /[區圖級詞綴數測繪顯現記錄與後體質獲該對為這點邊靈寶險響屬進遠淵淺環島灣鄰傷機電凍緩觸術擊運亂澤溝灘曠儲給艦隊長難殘敗發沒遺墳頭額聖蟲隱覺壇籠鑰鯨龜盜鏽個備傳價劑奧幣帶擁於會條機滿為無燈眾茲藥裝質錮鍊關隻項類魚黃]/
+
 /** In-game "Area Level:" term in the chart's client language. Recorded
  * imports use their exact language; manual/legacy charts fall back to text
  * heuristics (TW first via traditional chars, then CN, else Korean/English). */
@@ -59,21 +69,52 @@ export function buildSingleChartSearch(chart: ChartData): string {
     .join(' ')
 }
 
+/** Which client language the best-chart search regex should match against. */
+export type RegexLang = 'en' | 'zh' | 'tw'
+
+/**
+ * Verbatim client text for a voyage mod in the requested language, when the
+ * data has one: EN uses the canonical `text`; CN/TW use the recorded client
+ * aliases (corpus-verified or poedb-datamined, sometimes both). Self map-mod
+ * families (cm-*) only carry the paraphrased Simplified `zh` display text,
+ * which the in-game search would not match (e.g. zh 额外包含 vs the CN client
+ * 包含…额外的), so they are deliberately excluded from the CN/TW regex.
+ */
+function clientTextFor(m: VoyageModDef, lang: RegexLang): string | undefined {
+  if (lang === 'en') return m.text
+  for (const alias of m.aliases ?? []) {
+    if (lang === 'tw') {
+      if (TW_CLIENT_CHAR_RE.test(alias)) return alias
+    } else if (HAN_RE.test(alias) && !TW_CLIENT_CHAR_RE.test(alias) && !HANGUL_RE.test(alias)) {
+      return alias
+    }
+  }
+  return undefined
+}
+
 /**
  * Build a paste-into-game regex that highlights the BEST charts given the
  * user's reward weights - no import needed. Mods are ranked by weighted value
  * times scope reach (a global mod touches 9 areas, adjacent ~3, self 1), then
  * greedily added as shortest-unique text fragments until the length cap.
- * Fragments use letters/spaces only so rolled numeric values don't break them.
+ * `lang` picks which client language the fragments are written in: EN uses
+ * letters/spaces only (so rolled numeric values don't break matching), CN/TW
+ * fold each mod down to a space-free Han run (the CN/TW client renders chart
+ * tooltips without spaces, and the game search matches their unspaced text).
  */
 export function buildBestModRegex(
   weights: Weights,
   cap = 50,
   disabledMods?: Set<string>,
+  lang: RegexLang = 'en',
 ): { regex: string; included: VoyageModDef[] } {
   const reach = { self: 1, adjacent: 3, global: 9 } as const
   const lettersOnly = (s: string) =>
     s.toLowerCase().replace(/[^a-z ]+/g, ' ').replace(/\s+/g, ' ').trim()
+  // CJK client text is unspaced; drop digits/percent/ranges/spaces so tier
+  // variants collapse into one family and fragments match the unspaced tooltip
+  const hanOnly = (s: string) => s.replace(/[^\p{Script=Han}]+/gu, '')
+  const fold = lang === 'en' ? lettersOnly : hanOnly
 
   // group tier variants into families (identical text once numbers are stripped);
   // a family's value is its best tier's value
@@ -83,7 +124,10 @@ export function buildBestModRegex(
     const w = weights[voyageRewardKey(m)] ?? 0
     const v = m.effects.reduce((s, e) => s + w * e.percent, 0) * reach[m.scope]
     if (v <= 0) continue
-    const key = lettersOnly(m.text)
+    const text = clientTextFor(m, lang)
+    if (text === undefined) continue
+    const key = fold(text)
+    if (!key) continue
     const existing = families.get(key)
     if (!existing || v > existing.v) families.set(key, { m, v })
   }
