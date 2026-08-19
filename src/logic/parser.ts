@@ -374,6 +374,45 @@ function diceOverlap(a: Set<string>, b: Set<string>): number {
   return (2 * inter) / (a.size + b.size)
 }
 
+/**
+ * IDF-style bigram weights over the alias corpus: the skeleton of every
+ * strongbox sentence (相邻区域/包含/额外/保险箱) appears in almost every
+ * form and is nearly useless for telling typed boxes apart, while the type
+ * token (侦探/特工/神圣/预言家/瓶中信...) is rare and decisive. Weighted Dice
+ * with these weights stops a typed-box near-miss from being swallowed by the
+ * generic "+N 保险箱" family (reported issue: CN 特工 charts resolving to
+ * adj-box instead of adj-opbox).
+ */
+function cjkWeights(): Map<string, number> {
+  const df = new Map<string, number>()
+  let forms = 0
+  for (const mod of VOYAGE_MODS) {
+    if (mod.scope === 'self') continue
+    for (const form of mod.aliases ?? []) {
+      forms++
+      for (const b of cjkBigrams(normalizeAliasText(form))) df.set(b, (df.get(b) ?? 0) + 1)
+    }
+  }
+  return new Map([...df].map(([b, c]) => [b, Math.log((forms + 1) / (c + 1)) + 1]))
+}
+const CJK_WEIGHTS: Map<string, number> = cjkWeights()
+
+/** weighted Dice: rare shared characters dominate, common skeletons fade */
+function weightedDice(
+  a: Set<string>,
+  b: Set<string>,
+  weights: Map<string, number>,
+): number {
+  if (a.size === 0 || b.size === 0) return 0
+  let sumA = 0
+  let sumB = 0
+  for (const x of a) sumA += weights.get(x) ?? 1
+  for (const x of b) sumB += weights.get(x) ?? 1
+  let inter = 0
+  for (const x of a) if (b.has(x)) inter += weights.get(x) ?? 1
+  return (2 * inter) / (sumA + sumB)
+}
+
 /** a near-miss wording must still be mostly the same sentence */
 const CJK_MATCH_THRESHOLD = 0.6
 
@@ -396,7 +435,7 @@ function matchCjkFuzzy(line: string): string | null {
       const normalized = normalizeAliasText(form)
       const sig = cjkBigrams(normalized)
       if (sig.size < 3) continue
-      const score = diceOverlap(lineBigrams, sig)
+      const score = weightedDice(lineBigrams, sig, CJK_WEIGHTS)
       const digits = normalized.match(/\d+/g)?.map(Number) ?? []
       const dist =
         Number.isNaN(lineNum) || digits.length === 0
